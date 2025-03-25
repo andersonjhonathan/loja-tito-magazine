@@ -1,0 +1,6 @@
+   /* Arredondar as bordas da div que contém as imagens */
+  .carroselStyle {
+    border-radius: 15px; 
+    overflow: hidden;
+  }
+  
