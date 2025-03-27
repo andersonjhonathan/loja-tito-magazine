@@ -1,0 +1,15 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3" *ngFor="let camisa of camisas">
+            <div class="card p-3">
+                <div class="badge bg-success text-white w-25">↓ {{ camisa.desconto }}%</div>
+                <img [src]="camisa.imagem" class="card-img-top" alt="{{ camisa.nome }}">
+                <div class="card-body">
+                    <h6 class="card-title">{{ camisa.nome }}</h6>
+                    <p class="text-success fw-bold">R$ {{ camisa.precoAtual.toFixed(2) }} <span class="text-muted text-decoration-line-through">R$ {{ camisa.precoOriginal.toFixed(2) }}</span></p>
+                    <p class="text-muted">em até <strong>12x</strong> de <span class="text-success fw-bold">R$ {{ (camisa.precoAtual / 12).toFixed(2) }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
