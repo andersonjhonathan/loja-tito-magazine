@@ -2,3 +2,13 @@
     color:black;
     font-size: 18px;
 }
+
+.btn-dark:hover {
+    background-color: #284998 !important;
+    border-color: #284998 !important;
+}
+
+.btn-light:hover{
+    background-color: #91c5e5 !important;
+    border-color: #91c5e5 !important;
+}
