@@ -1,0 +1,10 @@
+img.rounded-circle {
+    border: 5px solid #f8f9fa;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .badge {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    text-align: center;
+  }

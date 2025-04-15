@@ -2,8 +2,10 @@
     <div class="container text-center pt-5">
         <div class="d-flex justify-content-center align-items-center">
           <div>
+            <a href="/">
               <img src="assets/tito_logo.png" class="d-block" style="width: 200px; height: auto; margin-right: 25px">
-          </div>
+            </a>
+          </div>          
           <div class="input-group search-bar">
             <input type="text" class="form-control" placeholder="O que está buscando?">
             <span class="input-group-text">
@@ -18,15 +20,16 @@
         </div>
     
         <div class="nav-buttons d-flex justify-content-center mt-4">
-          <button class="btn btn-dark mx-2">MASCULINAS</button>
-          <button class="btn btn-dark mx-2">FEMININAS</button>
-          <button class="btn btn-dark mx-2">TÊNIS</button>
-          <button class="btn btn-dark mx-2">NBA</button>
-          <button class="btn btn-dark mx-2">VERSÕES TORCEDOR</button>
-          <button class="btn btn-dark mx-2">VERSÔES JOGADOR</button>
-          <button class="btn btn-dark mx-2">RETRÔS</button>
-          <button class="btn btn-dark mx-2">KIT INFANTIL</button>
+          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Masculinas']">MASCULINAS</button>
+          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Femininas']">FEMININAS</button>
+          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Tênis']">TÊNIS</button>
+          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'NBA']">NBA</button>
+          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Versões Torcedor']">VERSÕES TORCEDOR</button>
+          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Versões Jogador']">VERSÕES JOGADOR</button>
+          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Retrô']">RETRÔS</button>
+          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Kit Infantil']">KIT INFANTIL</button>
         </div>
+        
       </div>
 </div>
 

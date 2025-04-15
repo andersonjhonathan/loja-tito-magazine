@@ -1,13 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { NgxImageZoomModule } from 'ngx-image-zoom';
 
 @Component({
   selector: 'app-page-product',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgxImageZoomModule],
   templateUrl: './page-product.component.html',
   styleUrl: './page-product.component.css',
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PageProductComponent {
   produto: any;
