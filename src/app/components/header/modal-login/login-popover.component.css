@@ -1,0 +1,24 @@
+div.popover.fade.show.bs-popover-bottom {
+  width: 300px !important; 
+  max-width: 100% !important; 
+  background-color: white !important; 
+  border-radius: 8px !important; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; 
+  position: fixed !important; 
+  top: 30% !important; 
+  left: 80% !important; 
+  transform: translate(-50%, -50%) !important; 
+  z-index: 9999 !important; 
+}
+
+.btn-dark:hover {
+  background-color: #284998 !important;
+  border-color: #284998 !important;
+}
+
+.btn-light:hover{
+  background-color: #91c5e5 !important;
+  border-color: #91c5e5 !important;
+}
+
+

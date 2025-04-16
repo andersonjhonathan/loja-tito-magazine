@@ -1,0 +1,52 @@
+<div
+  class="popover fade show bs-popover-bottom"
+  role="tooltip"
+  style="position: fixed; top: 70px; left: calc(100vw - 220px); z-index: 1050;"
+  @fadeInOut
+>
+  <div class="popover-arrow"></div>
+  <div class="popover-body">
+    <div class="form-container" [ngClass]="{ 'form-left': !isCadastro && !isRecuperarSenha, 'form-middle': isCadastro, 'form-right': isRecuperarSenha }">
+      <h5 class="mb-2">
+        {{ isCadastro ? 'Criar sua conta' : isRecuperarSenha ? 'Recuperar senha' : 'Entrar em minha conta' }}
+      </h5>
+      <p class="small">
+        {{ isCadastro ? 'Preencha os dados abaixo para criar sua conta:' : isRecuperarSenha ? 'Insira seu e-mail para recuperar a senha:' : 'Insira seu e-mail e senha:' }}
+      </p>
+
+      <!-- Inputs Condicionais -->
+      <input *ngIf="!isCadastro && !isRecuperarSenha" type="email" class="form-control mb-2" placeholder="E-mail" [(ngModel)]="email" />
+      <input *ngIf="!isCadastro && !isRecuperarSenha" type="password" class="form-control mb-2" placeholder="Senha" [(ngModel)]="senha" />
+
+      <!-- Inputs para Cadastro -->
+      <input *ngIf="isCadastro" type="text" class="form-control mb-2" placeholder="Nome completo" [(ngModel)]="nome" />
+      <input *ngIf="isCadastro" type="email" class="form-control mb-2" placeholder="E-mail" [(ngModel)]="email" />
+      <input *ngIf="isCadastro" type="password" class="form-control mb-2" placeholder="Senha" [(ngModel)]="senha" />
+      <input *ngIf="isCadastro" type="password" class="form-control mb-2" placeholder="Confirme a senha" [(ngModel)]="confirmarSenha" />
+
+      <!-- Input para Recuperação de Senha -->
+      <input *ngIf="isRecuperarSenha" type="email" class="form-control mb-2" placeholder="E-mail" [(ngModel)]="email" />
+
+      <!-- Botão Condicional -->
+      <button class="btn btn-dark w-100 mb-2" (click)="isCadastro ? cadastrar() : isRecuperarSenha ? recuperarSenha() : login()">
+        {{ isCadastro ? 'Criar conta' : isRecuperarSenha ? 'Recuperar senha' : 'Entrar' }}
+      </button>
+
+      <div *ngIf="erro" class="alert alert-danger p-2 py-1 mb-2 text-center small">
+        {{ erro }}
+      </div>
+
+      <div class="text-center">
+        <small>
+          <a href="#" class="text-decoration-none" (click)="toggleCadastro()">
+            {{ isCadastro ? 'Já tem uma conta? Entrar' : 'Novo cliente? Criar sua conta' }}
+          </a><br />
+          <a href="#" class="text-decoration-none" (click)="toggleRecuperarSenha()">
+            {{ isRecuperarSenha ? 'Voltar para entrar' : 'Esqueceu sua senha?' }}
+          </a>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+
