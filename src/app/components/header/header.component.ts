@@ -1,9 +1,10 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { LoginPopoverComponent } from './modal-login/login-popover.component';
 import { AuthService } from './modal-login/auth.service';
 import { Subscription } from 'rxjs';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-header',
@@ -17,8 +18,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAdmin: boolean = false;
   mostrarPopover = false;
   popoverPosition = { top: '0px', left: '0px' };
+  quantidadeCarrinho: number = 0;
   
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router, private cartService: CartService) {}
   private authSubscription: Subscription | null = null;
 
 
@@ -27,6 +29,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
     });
+
+    this.cartService.cart$.subscribe(items => {
+      this.quantidadeCarrinho = items.length;
+    });
   }
 
   ngOnDestroy() {
@@ -34,6 +40,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
+    
   }
   
   togglePopover() {
@@ -46,6 +53,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         left: `${rect.left + window.scrollX}px`
       };
     }
+  }
+
+  IrParaCarrinho() {
+    this.router.navigate(['/carrinho']);
   }
   
 }

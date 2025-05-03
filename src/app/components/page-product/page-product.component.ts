@@ -2,11 +2,13 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { NgxImageZoomModule } from 'ngx-image-zoom';
+import { CartService } from '../../services/cart.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-page-product',
   standalone: true,
-  imports: [CommonModule, NgxImageZoomModule],
+  imports: [CommonModule, NgxImageZoomModule, FormsModule],
   templateUrl: './page-product.component.html',
   styleUrl: './page-product.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -14,10 +16,15 @@ import { NgxImageZoomModule } from 'ngx-image-zoom';
 export class PageProductComponent {
   produto: any;
   tamanhoSelecionado: string | null = null;
-  personalizar = false;
+  personalizar: boolean = false;
   patchSelecionado = false;
+  nomePersonalizado: string = '';
+  numeroPersonalizado: number | null = null;
 
-  constructor(private route: ActivatedRoute) {
+  constructor(
+    private route: ActivatedRoute, 
+    private cartService: CartService
+  ) {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.carregarProduto(id);
   }
@@ -85,4 +92,49 @@ export class PageProductComponent {
 
     this.produto = produtos.find(p => p.id === id);
   }
+
+  limitarNumero(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let valor = input.value;
+  
+    valor = valor.replace(/[^0-9]/g, '');
+
+    if (valor.length > 2) {
+      valor = valor.slice(0, 2);
+    }
+
+    this.numeroPersonalizado = valor ? Number(valor) : null;
+    input.value = valor;
+  }
+  
+
+  get valorTotal(): number {
+    let total = this.produto?.precoPromocional || 0;
+    if (this.personalizar) total += 20;
+    if (this.patchSelecionado) total += 15;
+    return total;
+  }
+  
+  adicionarAoCarrinho() {
+    const itemCarrinho = {
+      ...this.produto,
+      quantidade: 1,
+      tamanho: this.tamanhoSelecionado,
+      personalizar: this.personalizar,
+      patch: this.patchSelecionado,
+    };
+  
+    this.cartService.addToCart(itemCarrinho);
+    alert('Produto adicionado ao carrinho!');
+  }
+
+  definirPersonalizacao(valor: boolean) {
+    this.personalizar = valor;
+  
+    if (!valor) {
+      this.nomePersonalizado = '';
+      this.numeroPersonalizado = null;
+    }
+  }
+  
 }

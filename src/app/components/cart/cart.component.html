@@ -1,0 +1,80 @@
+<div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;" *ngIf="items.length === 0">
+    <i class="bi bi-cart2" style="font-size: 48px; margin-bottom: 16px;"></i>
+    <h4 class="mb-3">Seu carrinho está vazio</h4>
+    <button class="btn px-4 py-2 fw-bold text-white" style="background-color: #079cff; border-radius: 12px;" (click)="todosOsProdutos()">
+      Veja nossos produtos
+    </button>
+  </div>
+
+  <div class="container my-5" *ngIf="items.length > 0">
+    <h4 class="mb-4">Meu carrinho</h4>
+  
+    <div class="row">
+      <!-- Lista de produtos -->
+      <div class="col-md-8">
+        <div class="bg-white p-4 rounded shadow-sm">
+          <div class="row fw-bold border-bottom pb-2 mb-3">
+            <div class="col-6">Produto</div>
+            <div class="col-3 text-center">Quantidade</div>
+            <div class="col-3 text-end">Total</div>
+          </div>
+  
+          <div *ngFor="let item of items; let i = index" class="row align-items-center mb-4">
+            <div class="col-6 d-flex align-items-center">
+              <img [src]="item.imagemPrincipal" alt="{{item.nome}}" width="80" class="me-3 rounded" />
+              <div>
+                <p class="mb-1">{{ item.nome }}</p>
+                <span class="text-success fw-semibold">R$ {{ item.precoPromocional | number:'1.2-2' }}</span>
+                <span class="text-muted text-decoration-line-through ms-2">R$ {{ item.precoOriginal | number:'1.2-2' }}</span>
+                <div>
+                    <a href="#" class="text-danger small mt-1 d-inline-block" (click)="removerItem(i); $event.preventDefault()">Remover</a>
+                </div>
+              </div>
+            </div>
+  
+            <div class="col-3 text-center">
+              <div class="d-flex justify-content-center align-items-center">
+                <button class="btn btn-light border px-2" (click)="decrementar(item)">-</button>
+                <span class="mx-2">{{ item.quantidade }}</span>
+                <button class="btn btn-light border px-2" (click)="incrementar(item)">+</button>
+              </div>
+            </div>
+  
+            <div class="col-3 text-end fw-semibold">
+              R$ {{ (item.precoPromocional * item.quantidade) | number:'1.2-2' }}
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Resumo do pedido -->
+      <div class="col-md-4">
+        <div class="bg-white p-4 rounded shadow-sm">
+          <div class="d-flex justify-content-between mb-2">
+            <strong>Total</strong>
+            <strong>R$ {{ calcularTotal() | number:'1.2-2' }}</strong>
+          </div>
+          <p class="text-success fw-semibold mb-2">Você economizou R$ {{ calcularEconomia() | number:'1.2-2' }}!</p>
+          <span class="badge bg-success mb-3">PIX/CARTÃO RECEBA 3 DIAS ANTES</span>
+  
+          <div class="form-group mb-3">
+            <label for="envio">Instruções de envio</label>
+            <select class="form-control" id="envio">
+              <option>Selecione...</option>
+              <option>Retirar na loja</option>
+              <option>Entrega expressa</option>
+            </select>
+          </div>
+  
+          <button class="btn btn-warning w-100 fw-bold mb-2">FINALIZAR COMPRA</button>
+          <button class="btn btn-outline-success w-100 fw-bold" (click)="todosOsProdutos()">CONTINUAR COMPRANDO</button>
+        </div>
+  
+        <div class="text-center mt-3 text-muted">
+          <i class="bi bi-lock-fill me-2"></i>Pagamento Seguro <br />
+          <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" width="60" />
+        </div>
+      </div>
+    </div>
+  </div>
+  

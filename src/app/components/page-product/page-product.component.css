@@ -11,4 +11,8 @@
     transform: scale(1.5);
     cursor: zoom-in;
   }
+
+  .iconColor{
+    color: #32c6d1
+  }
   

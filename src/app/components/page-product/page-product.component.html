@@ -26,53 +26,92 @@
         <p class="text-muted mb-1">Novo | {{ produto.vendidos }} Vendidos</p>
         <h4>{{ produto.nome }}</h4>
         <p class="text-muted">Cód. Item {{ produto.codigo }}</p>
-        <p class="text-primary fw-bold">Vendido e enviado pela {{ produto.vendedor }}</p>
+        <p class="text-primary rounded"
+          style="background-color: rgb(218, 250, 250); display: inline; margin-right: 170px; padding-left: 8px">
+          Vendido e enviado pela <span class="fw-bold">Tito Magazine ⓒ</span>
+        </p>
+
 
         <!-- Tamanhos -->
         <div class="mb-3">
           <label class="form-label fw-bold">Tamanho:</label>
-          <div class="btn-group flex-wrap">
+          <div class="d-flex flex-wrap">
             <button *ngFor="let t of produto.tamanhos" type="button" class="btn btn-outline-primary me-2 mb-1"
               [class.active]="t === tamanhoSelecionado" (click)="tamanhoSelecionado = t">{{ t }}</button>
           </div>
         </div>
 
         <!-- Personalização -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">Personalizar (R$ 20):</label>
-          <div class="btn-group">
-            <button class="btn btn-outline-secondary" [class.active]="!personalizar" (click)="personalizar = false">Não
-              Personalizar</button>
-            <button class="btn btn-outline-secondary" [class.active]="personalizar"
-              (click)="personalizar = true">Personalizar</button>
+        <div>
+          <label class="form-label fw-bold">Personalizar (+R$ 20):</label>
+          <div class="d-flex flex-wrap">
+            <button class="btn btn-outline-secondary me-2 mb-1" [class.active]="!personalizar"
+              (click)="personalizar = false">
+              Não Personalizar
+            </button>
+            <button class="btn btn-outline-secondary me-2 mb-1" [class.active]="personalizar"
+              (click)="personalizar = true">
+              Personalizar
+            </button>
+          </div>
+
+          <!-- Inputs aparecem somente se personalizar for true -->
+          <div *ngIf="personalizar" class="mt-2 m-5 pt-4">
+            <div class="mb-2">
+              <i class="bi bi-person-fill pe-1 iconColor"></i>
+              <label for="nomeCamisa" class="form-label">SEU NOME:</label>
+              <input type="text" id="nomeCamisa" class="form-control rounded-3" [(ngModel)]="nomePersonalizado" placeholder="Digite seu nome ou apelido">
+            </div>
+            <div>
+              <i class="fa fa-futbol pe-1 iconColor"></i>
+              <label for="numeroCamisa" class="form-label">SEU NÚMERO:</label>
+              <input type="text" class="form-control rounded-3" [(ngModel)]="numeroPersonalizado" maxlength="2" pattern="[0-9]*"
+                inputmode="numeric" (input)="limitarNumero($event)" placeholder="Número da camisa (máx. 2 dígitos)">
+            </div>
           </div>
         </div>
+
 
         <!-- Patch -->
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label class="form-label fw-bold">Adicionar Patch (+R$15):</label>
-          <div class="btn-group">
-            <button class="btn btn-outline-secondary" [class.active]="!patchSelecionado"
+          <div class="d-flex flex-wrap">
+            <button class="btn btn-outline-secondary me-2 mb-1" [class.active]="!patchSelecionado"
               (click)="patchSelecionado = false">Sem Patch</button>
-            <button class="btn btn-outline-secondary" [class.active]="patchSelecionado"
+            <button class="btn btn-outline-secondary me-2 mb-1" [class.active]="patchSelecionado"
               (click)="patchSelecionado = true">Campeão Copa do Brasil 2024</button>
+          </div>
+        </div> -->
+
+        <!-- Preço -->
+        <div class="p-3 bg-light mt-4 d-flex align-items-center">
+          <div class="pe-5">
+            <p>Preço:</p>
+          </div>
+          <div>
+            <p class="text-muted text-decoration-line-through mb-1">
+              DE R$ {{ produto?.precoOriginal | number:'1.2-2' }}
+            </p>
+  
+            <h3 class="text-success mb-1">
+              R$ {{ valorTotal | number:'1.2-2' }}
+            </h3>
+  
+            <p class="text-muted mb-1">
+              em até 12x de <strong>R$ {{ valorTotal / 12 | number:'1.2-2' }}</strong>
+            </p>
+  
+            <span class="badge bg-success">
+              R$ {{ produto.precoOriginal - valorTotal | number:'1.2-2' }} de desconto
+            </span>
           </div>
         </div>
 
-        <!-- Preço -->
-        <div class="card p-3 bg-light mt-4">
-          <p class="text-muted text-decoration-line-through mb-1">De R$ {{ produto.precoOriginal }}</p>
-          <h3 class="text-success mb-1">R$ {{ produto.precoPromocional }}</h3>
-          <p class="text-muted mb-1">em até 12x de <strong>R$ {{ produto.precoPromocional / 12 | number:'1.2-2'
-              }}</strong></p>
-          <span class="badge bg-success">R$ {{ produto.precoOriginal - produto.precoPromocional | number:'1.2-2' }} de
-            desconto</span>
-        </div>
 
         <!-- Ações -->
         <div class="d-grid gap-2 mt-4">
           <button class="btn btn-success btn-lg">Comprar agora</button>
-          <button class="btn btn-outline-primary">Adicionar ao carrinho</button>
+          <button class="btn btn-outline-primary" (click)="adicionarAoCarrinho()">Adicionar ao carrinho</button>
           <button class="btn btn-outline-dark">
             <i class="bi bi-whatsapp me-1"></i> Comprar pelo WhatsApp
           </button>
