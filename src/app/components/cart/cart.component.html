@@ -12,35 +12,37 @@
     <div class="row">
       <!-- Lista de produtos -->
       <div class="col-md-8">
-        <div class="bg-white p-4 rounded shadow-sm">
+        <div class="bg-white p-4 rounded-4 shadow border">
           <div class="row fw-bold border-bottom pb-2 mb-3">
-            <div class="col-6">Produto</div>
+            <div class="col-7">Produto</div>
             <div class="col-3 text-center">Quantidade</div>
-            <div class="col-3 text-end">Total</div>
+            <div class="col-2 text-end">Total</div>
           </div>
   
           <div *ngFor="let item of items; let i = index" class="row align-items-center mb-4">
-            <div class="col-6 d-flex align-items-center">
+            <div class="col-7 d-flex align-items-center">
               <img [src]="item.imagemPrincipal" alt="{{item.nome}}" width="80" class="me-3 rounded" />
               <div>
                 <p class="mb-1">{{ item.nome }}</p>
                 <span class="text-success fw-semibold">R$ {{ item.precoPromocional | number:'1.2-2' }}</span>
                 <span class="text-muted text-decoration-line-through ms-2">R$ {{ item.precoOriginal | number:'1.2-2' }}</span>
-                <div>
-                    <a href="#" class="text-danger small mt-1 d-inline-block" (click)="removerItem(i); $event.preventDefault()">Remover</a>
-                </div>
               </div>
             </div>
   
             <div class="col-3 text-center">
               <div class="d-flex justify-content-center align-items-center">
-                <button class="btn btn-light border px-2" (click)="decrementar(item)">-</button>
-                <span class="mx-2">{{ item.quantidade }}</span>
-                <button class="btn btn-light border px-2" (click)="incrementar(item)">+</button>
+                <div class="btn-group shadow-sm" role="group">
+                  <button class="btn btn-light border-end-0 rounded-start" (click)="decrementar(item)">-</button>
+                  <span class="bg-light border-start-0 border-end-0 px-3 py-1 d-flex align-items-center">{{ item.quantidade }}</span>
+                  <button class="btn btn-light border-start-0 rounded-end" (click)="incrementar(item)">+</button>
+                </div>
               </div>
+              <div>
+                <a href="#" class="text-danger small mt-1 d-inline-block" (click)="removerItem(i); $event.preventDefault()">Remover</a>
+            </div>
             </div>
   
-            <div class="col-3 text-end fw-semibold">
+            <div class="col-2 text-end fw-semibold" style="margin-top: -25px;">
               R$ {{ (item.precoPromocional * item.quantidade) | number:'1.2-2' }}
             </div>
           </div>
@@ -49,13 +51,13 @@
   
       <!-- Resumo do pedido -->
       <div class="col-md-4">
-        <div class="bg-white p-4 rounded shadow-sm">
+        <div class="bg-white p-4 rounded-4 shadow border">
           <div class="d-flex justify-content-between mb-2">
             <strong>Total</strong>
             <strong>R$ {{ calcularTotal() | number:'1.2-2' }}</strong>
           </div>
-          <p class="text-success fw-semibold mb-2">Você economizou R$ {{ calcularEconomia() | number:'1.2-2' }}!</p>
-          <span class="badge bg-success mb-3">PIX/CARTÃO RECEBA 3 DIAS ANTES</span>
+          <p class="text-success fw-semibold mb-1" style="color: #00D864 !important; font-family: sans-serif;">Você economizou R$ {{ calcularEconomia() | number:'1.2-2' }}!</p>
+          <span class="badge bg-success rounded-4 mb-3" style="background-color: #00D864 !important; font-family: sans-serif;">PIX/CARTÃO RECEBA 3 DIAS ANTES</span>
   
           <div class="form-group mb-3">
             <label for="envio">Instruções de envio</label>
@@ -66,8 +68,8 @@
             </select>
           </div>
   
-          <button class="btn btn-warning w-100 fw-bold mb-2">FINALIZAR COMPRA</button>
-          <button class="btn btn-outline-success w-100 fw-bold" (click)="todosOsProdutos()">CONTINUAR COMPRANDO</button>
+          <button class="btn botaoFinalizar w-100 fw-bold mb-3">FINALIZAR COMPRA</button>
+          <button class="btn botaoTodosProdutos w-100 fw-bold" (click)="todosOsProdutos()">CONTINUAR COMPRANDO</button>
         </div>
   
         <div class="text-center mt-3 text-muted">
@@ -77,4 +79,5 @@
       </div>
     </div>
   </div>
+  <app-benefits></app-benefits>
   

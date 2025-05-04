@@ -7,3 +7,29 @@
     background-color: #91c5e5 !important;
     border-color: #91c5e5 !important;
 }
+
+.botaoFinalizar{
+    background-color: #FBC500;
+    color: white;
+    padding: 13px;
+    border-radius: 12px;
+    font-family: sans-serif;
+}
+
+.botaoFinalizar:hover{
+    background-color: #f8ce35;
+}
+
+.botaoTodosProdutos{
+    border-color: #00D864;
+    border-radius: 12px;
+    border-width: 2px;
+    padding: 13px;
+    color: #00D864;
+}
+
+.botaoTodosProdutos:hover{
+    background-color: #00D864;
+    border-color: #00D864;
+    color: white;
+}

@@ -3,7 +3,7 @@
 
     <!-- Galeria de Imagens -->
     <div class="col-md-6">
-      <div class="card shadow rounded p-3">
+      <div class="card shadow rounded-4 p-3">
         <div class="text-center">
           <div class="zoom-container mb-3">
             <lib-ngx-image-zoom [thumbImage]="produto.imagemPrincipal" [fullImage]="produto.imagemPrincipal"
@@ -18,11 +18,16 @@
           <small class="text-muted mt-2 d-block">Passe o mouse sobre a foto para ampliar</small>
         </div>
       </div>
+
+      <div class="card shadow rounded-4 p-4 mt-4">
+        <h5>Descrição</h5>
+        <p>{{ produto.descricao }}</p>
+      </div>
     </div>
 
     <!-- Informações do Produto -->
     <div class="col-md-6">
-      <div class="card shadow rounded p-4">
+      <div class="card shadow rounded-4 p-4">
         <p class="text-muted mb-1">Novo | {{ produto.vendidos }} Vendidos</p>
         <h4>{{ produto.nome }}</h4>
         <p class="text-muted">Cód. Item {{ produto.codigo }}</p>
@@ -84,7 +89,7 @@
         </div> -->
 
         <!-- Preço -->
-        <div class="p-3 bg-light mt-4 d-flex align-items-center">
+        <div class="p-3 mb-5 mt-4 d-flex align-items-center">
           <div class="pe-5">
             <p>Preço:</p>
           </div>
@@ -93,7 +98,7 @@
               DE R$ {{ produto?.precoOriginal | number:'1.2-2' }}
             </p>
   
-            <h3 class="text-success mb-1">
+            <h3 class="text-success mb-1" style="color: #0FB930 !important">
               R$ {{ valorTotal | number:'1.2-2' }}
             </h3>
   
@@ -101,31 +106,52 @@
               em até 12x de <strong>R$ {{ valorTotal / 12 | number:'1.2-2' }}</strong>
             </p>
   
-            <span class="badge bg-success">
+            <span class="badge bg-success rounded-4" style="background-color: #00D864 !important;">
               R$ {{ produto.precoOriginal - valorTotal | number:'1.2-2' }} de desconto
             </span>
           </div>
         </div>
 
+        <div id="box-frete" style="display: flex; align-items: center; border: 2px solid #4e4e4e; border-radius: 10px; padding: 10px 15px; font-family: Arial, sans-serif; max-width: 500px;">
+          <img src="assets/correios-logo_1.svg" alt="Correios" width="40" height="40" style="margin-right: 12px;">
+          <div style="flex: 1;">
+            <div style="font-size: 14px; color: #333;">Entrega via Correios ©</div>
+            <div id="localizacao" style="font-size: 14px; color: #555;">
+              Envio para <b>{{ localizacao }}</b>
+            </div>
+          </div>
+          <div style="font-weight: bold; font-size: 14px; color: #000;">Frete Grátis</div>
+        </div>
+        
 
         <!-- Ações -->
-        <div class="d-grid gap-2 mt-4">
-          <button class="btn btn-success btn-lg">Comprar agora</button>
-          <button class="btn btn-outline-primary" (click)="adicionarAoCarrinho()">Adicionar ao carrinho</button>
-          <button class="btn btn-outline-dark">
+        <div class="d-grid gap-2 mt-4 mb-3">
+          <button class="btn btn-success btn-lg" (click)="ComprarProduto()">Comprar agora</button>
+          <button class="btn btn-outline-primary" (click)="adicionarAoCarrinho()" style="font-family: sans-serif;">Adicionar ao carrinho</button>
+          <button class="btn btn-outline-success">
             <i class="bi bi-whatsapp me-1"></i> Comprar pelo WhatsApp
           </button>
         </div>
 
-        <p class="text-muted mt-3"><i class="bi bi-truck"></i> Entrega via Correios para <strong>Itaboraí, RJ</strong> -
-          Frete grátis</p>
+        <div class="rounded shadow-sm overflow-hidden" style="max-width: 100%; background-color: #f7f7f7;">
+          <div class="d-flex align-items-center gap-3 p-3">
+            <img src="assets/pagamento_card.svg" alt="Pagamento" width="50" height="50" />
+            <div>
+              <p class="mb-0 fw-semibold text-dark">Parcele suas compras</p>
+              <small class="text-success fw-bold">nas melhores bandeiras</small>
+            </div>
+          </div>
+          <div class="bg-white px-3 py-2 d-flex flex-wrap justify-content-center gap-3">
+            <img src="assets/bandeiras/amex.svg" alt="American Express" width="40" />
+            <img src="assets/bandeiras/boleto.svg" alt="Boleto" width="40" />
+            <img src="assets/bandeiras/mastercard.svg" alt="Mastercard" width="40" />
+            <img src="assets/bandeiras/visa.svg" alt="Visa" width="40" />
+            <img src="assets/bandeiras/elo.svg" alt="Elo" width="40" />
+            <img src="assets/bandeiras/pix.avif" alt="Pix" width="40" />
+          </div>
+        </div>
+
       </div>
     </div>
-  </div>
-
-  <!-- Descrição -->
-  <div class="card shadow rounded p-4 mt-5">
-    <h5>Descrição</h5>
-    <p>{{ produto.descricao }}</p>
   </div>
 </div>
