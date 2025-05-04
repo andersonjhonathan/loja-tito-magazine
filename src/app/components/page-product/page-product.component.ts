@@ -1,14 +1,15 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgxImageZoomModule } from 'ngx-image-zoom';
 import { CartService } from '../../services/cart.service';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-page-product',
   standalone: true,
-  imports: [CommonModule, NgxImageZoomModule, FormsModule],
+  imports: [CommonModule, NgxImageZoomModule, FormsModule, HttpClientModule],
   templateUrl: './page-product.component.html',
   styleUrl: './page-product.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -20,13 +21,17 @@ export class PageProductComponent {
   patchSelecionado = false;
   nomePersonalizado: string = '';
   numeroPersonalizado: number | null = null;
+  localizacao: string = 'Detectando local...';
 
   constructor(
     private route: ActivatedRoute, 
-    private cartService: CartService
+    private cartService: CartService,
+    private http: HttpClient,
+    private router: Router,
   ) {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.carregarProduto(id);
+    this.buscarLocalizacao();
   }
 
   carregarProduto(id: number) {
@@ -125,7 +130,7 @@ export class PageProductComponent {
     };
   
     this.cartService.addToCart(itemCarrinho);
-    alert('Produto adicionado ao carrinho!');
+    this.router.navigate(['/carrinho']);
   }
 
   definirPersonalizacao(valor: boolean) {
@@ -136,5 +141,29 @@ export class PageProductComponent {
       this.numeroPersonalizado = null;
     }
   }
+
+  buscarLocalizacao() {
+    //Alterar depois para PRD colocando https
+    this.http.get<any>('http://ip-api.com/json/').subscribe({
+      next: (data) => {
+        this.localizacao = `${data.city}, ${data.region} e Região`;
+      },
+      error: () => {
+        this.localizacao = 'sua região';
+      }
+    });
+  }
+
+  ComprarProduto() {
+    const itemCarrinho = {
+      ...this.produto,
+      quantidade: 1,
+      tamanho: this.tamanhoSelecionado,
+      personalizar: this.personalizar,
+      patch: this.patchSelecionado,
+    };
   
+    this.cartService.addToCart(itemCarrinho);
+    this.router.navigate(['/carrinho']);
+  }
 }

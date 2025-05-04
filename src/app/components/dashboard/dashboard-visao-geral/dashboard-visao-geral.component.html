@@ -1,0 +1,92 @@
+<div class="container-fluid">
+    <h2>Dashboard</h2>
+    
+    <!-- Gráfico de Vendas -->
+    <app-grafico-vendas></app-grafico-vendas>
+  
+    <div class="row mt-4">
+      <!-- Tabela de Vendas -->
+      <div class="col-12">
+        <h4>Vendas Realizadas</h4>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Total (R$)</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let venda of vendas">
+              <td>{{ venda.id }}</td>
+              <td>{{ venda.cliente }}</td>
+              <td>{{ venda.total | number: '1.2-2' }}</td>
+              <td>{{ venda.data }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <div class="row mt-4">
+      <!-- Tabela de Produtos -->
+      <div class="col-12">
+        <h4>Produtos</h4>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Preço (R$)</th>
+              <th>Estoque</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let produto of produtos">
+              <td>{{ produto.id }}</td>
+              <td>{{ produto.nome }}</td>
+              <td>{{ produto.preco | number: '1.2-2' }}</td>
+              <td>{{ produto.estoque }}</td>
+              <td>
+                <button class="btn btn-info" (click)="alterarProduto(produto)">Alterar</button>
+                <button class="btn btn-danger" (click)="removerProduto(produto.id)">Remover</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Adicionar Produto (Formulário) -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <h4>Adicionar Novo Produto</h4>
+        <form (ngSubmit)="adicionarProduto()">
+            <div class="mb-3">
+                <label>Nome</label>
+                <input class="form-control" [(ngModel)]="produto.nome" name="nome">
+              </div>
+              <div class="mb-3">
+                <label>Imagem (caminho)</label>
+                <input class="form-control" [(ngModel)]="produto.imagem" name="imagem">
+              </div>
+              <div class="mb-3">
+                <label>Preço Original</label>
+                <input type="number" class="form-control" [(ngModel)]="produto.precoOriginal" name="precoOriginal">
+              </div>
+              <div class="mb-3">
+                <label>Preço Atual</label>
+                <input type="number" class="form-control" [(ngModel)]="produto.precoAtual" name="precoAtual">
+              </div>
+              <div class="mb-3">
+                <label>Desconto (%)</label>
+                <input type="number" class="form-control" [(ngModel)]="produto.desconto" name="desconto">
+              </div>
+              <button class="btn btn-success" (click)="adicionarProduto()">Adicionar Produto</button>              
+        </form>
+      </div>
+    </div>
+  </div>
+  

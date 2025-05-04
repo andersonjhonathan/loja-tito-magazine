@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../services/cart.service';
 import { Router, RouterModule } from '@angular/router';
+import { BenefitsComponent } from "../benefits/benefits.component";
 
 @Component({
   standalone: true,
   selector: 'app-cart',
-  imports: [CommonModule],
+  imports: [CommonModule, BenefitsComponent],
   templateUrl: './cart.component.html',
+  styleUrls: ['./cart.component.css']
 })
 export class CartComponent implements OnInit {
   items: any[] = [];
@@ -45,4 +47,5 @@ export class CartComponent implements OnInit {
   todosOsProdutos(){
     this.router.navigate(['/produtos', 'Masculinas']);
   }
+  
 }

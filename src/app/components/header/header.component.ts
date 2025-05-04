@@ -58,5 +58,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   IrParaCarrinho() {
     this.router.navigate(['/carrinho']);
   }
+
+  navegarParaDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
   
 }

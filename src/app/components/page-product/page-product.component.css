@@ -15,4 +15,26 @@
   .iconColor{
     color: #32c6d1
   }
+
+  .btn-success{
+    background-color: #00D864;
+    font-family: sans-serif;
+    border-color: #00D864;
+  }
+
+  .btn-success:hover{
+    background-color: #39f591;
+  }
+
+  .btn-outline-success{
+    border-color: #00D864;
+    color: #00D864;
+    font-family: sans-serif;
+  }
+
+  .btn-outline-success:hover{
+    background-color: #00D864;
+    border-color: #00D864;
+    color: white;
+  }
   
