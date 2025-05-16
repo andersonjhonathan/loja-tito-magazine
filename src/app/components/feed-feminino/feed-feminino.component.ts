@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-feed-feminino',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './feed-feminino.component.html',
   styleUrl: './feed-feminino.component.css'
