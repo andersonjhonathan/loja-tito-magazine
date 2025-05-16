@@ -12,7 +12,7 @@ import { SobreNosComponent } from "../sobre-nos/sobre-nos.component";
   imports: [CarroselComponent, FeedMasculinoComponent, FeedFemininoComponent, BenefitsComponent, SobreNosComponent],
   providers: [],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrls: ['./home.component.css'] 
 })
 export class HomeComponent {
 
