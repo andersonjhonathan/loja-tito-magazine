@@ -6,8 +6,8 @@
 </div>
 
 <div class="mt-4">
-    <div class="row" *ngIf="camisas.length > 0; else loading">
-      <div class="col-md-3" *ngFor="let camisa of camisas">
+    <div class="row" *ngIf="masculinas.length > 0; else loading">
+      <div class="col-md-3" *ngFor="let camisa of masculinas">
         <a [routerLink]="['/produto', camisa.id]" class="text-decoration-none text-dark">
           <div class="card p-3 h-100" style="cursor: pointer;">
             <div class="badge bg-success text-white w-25">↓ {{ camisa.desconto }}%</div>

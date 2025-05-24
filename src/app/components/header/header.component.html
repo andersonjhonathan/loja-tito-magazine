@@ -1,52 +1,53 @@
 <div class="bg-dark pb-5 pt-3">
-    <div class="container text-center pt-5">
-        <div class="d-flex justify-content-center align-items-center">
-          <div>
-            <a href="/">
-              <img src="assets/tito_logo.png" class="d-block" style="width: 200px; height: auto; margin-right: 25px">
-            </a>
-          </div>          
-          <div class="input-group search-bar">
-            <input type="text" class="form-control" placeholder="O que está buscando?">
-            <span class="input-group-text">
-              <i class="fa-x2 fas fa-search corIcon"></i>
-            </span>
-          </div>
-
-          <div class="position-relative d-inline-block">
-            <button #loginBtn class="btn btn-light ms-3" (click)="togglePopover()">Login</button>
-
-            <app-login-popover *ngIf="mostrarPopover" (fecharPopover)="togglePopover()"/>
-          </div>
-          
-          <button *ngIf="isAdmin" class="btn btn-danger ml-2 ms-3" (click)="navegarParaDashboard()">
-            Dashboard
-          </button>
-
-          <div class="position-relative d-inline-block text-center">
-            <span *ngIf="quantidadeCarrinho > 0"
-              class="position-absolute badge rounded-pill bg-danger text-white"
-              style="top: -10px; right: -10px; z-index: 10;">
-                {{ quantidadeCarrinho }}
-            </span>
-            <button class="btn btn-light ms-3" (click)="IrParaCarrinho()">
-              <i class="fas fa-shopping-bag"></i>
-            </button>
-          </div>
-          
-        </div>
-    
-        <div class="nav-buttons d-flex justify-content-center mt-4">
-          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Masculinas']">MASCULINAS</button>
-          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Femininas']">FEMININAS</button>
-          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Tênis']">TÊNIS</button>
-          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'NBA']">NBA</button>
-          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Versões Torcedor']">VERSÕES TORCEDOR</button>
-          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Versões Jogador']">VERSÕES JOGADOR</button>
-          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Retrô']">RETRÔS</button>
-          <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Kit Infantil']">KIT INFANTIL</button>
-        </div>
-        
+  <div class="container text-center pt-5">
+    <div class="d-flex justify-content-center align-items-center">
+      <div>
+        <a href="/">
+          <img src="assets/tito_logo.png" class="d-block" style="width: 200px; height: auto; margin-right: 25px">
+        </a>
       </div>
-</div>
+      <div class="input-group search-bar">
+        <input type="text" class="form-control" placeholder="O que está buscando?">
+        <span class="input-group-text">
+          <i class="fa-x2 fas fa-search corIcon"></i>
+        </span>
+      </div>
 
+      <div class="position-relative d-inline-block">
+        <button #loginBtn class="btn btn-light ms-3 flex-shrink-0" (click)="togglePopover()"
+          style="white-space: nowrap;">
+          {{ usuarioLogado?.name ? 'Olá, ' + usuarioLogado?.name + '!' : 'Login' }}
+        </button>
+
+        <app-login-popover *ngIf="mostrarPopover" (fecharPopover)="togglePopover()" />
+      </div>
+
+      <button *ngIf="isAdmin" class="btn btn-danger ml-2 ms-3" (click)="navegarParaDashboard()">
+        Dashboard
+      </button>
+
+      <div class="position-relative d-inline-block text-center">
+        <span *ngIf="quantidadeCarrinho > 0" class="position-absolute badge rounded-pill bg-danger text-white"
+          style="top: -10px; right: -10px; z-index: 10;">
+          {{ quantidadeCarrinho }}
+        </span>
+        <button class="btn btn-light ms-3" (click)="IrParaCarrinho()">
+          <i class="fas fa-shopping-bag"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div class="nav-buttons d-flex justify-content-center mt-4">
+      <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Masculinas']">MASCULINAS</button>
+      <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Femininas']">FEMININAS</button>
+      <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Tênis']">TÊNIS</button>
+      <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'NBA']">NBA</button>
+      <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Versões Torcedor']">VERSÕES TORCEDOR</button>
+      <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Versões Jogador']">VERSÕES JOGADOR</button>
+      <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Retrô']">RETRÔS</button>
+      <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Kit Infantil']">KIT INFANTIL</button>
+    </div>
+
+  </div>
+</div>

@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<!-- <div class="container mt-4">
     <div class="row">
         <div class="col-md-3">
             <h4 class="mb-3">Categorias</h4>
@@ -36,7 +36,6 @@
                 </div>
             </div>
 
-            <!-- Paginação -->
             <nav class="d-flex justify-content-center">
                 <ul class="pagination">
                     <li class="page-item" [class.disabled]="paginaAtual === 1">
@@ -54,4 +53,117 @@
             </nav>
         </div>
     </div>
+</div> -->
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-3">
+      <h4 class="mb-3">Categorias</h4>
+      <ul class="list-group">
+        <li
+          class="list-group-item"
+          *ngFor="let categoria of categorias"
+          (click)="filtrarPorCategoria(categoria)"
+          [class.selected]="categoria === categoriaSelecionada"
+        >
+          {{ categoria }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-md-9">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span>{{ produtosFiltrados.length }} produtos encontrados</span>
+        <select
+          class="form-select w-auto"
+          [(ngModel)]="ordenacaoSelecionada"
+          (change)="ordenarProdutos()"
+        >
+          <option value="maisVendidos">Mais vendidos</option>
+          <option value="menorPreco">Menor preço</option>
+          <option value="maiorPreco">Maior preço</option>
+        </select>
+      </div>
+
+      <!-- <div class="row">
+        <div class="col-md-3 mb-4" *ngFor="let produto of produtosPaginados">
+          <div class="card h-100">
+            <img [src]="produto.image_url" class="card-img-top" alt="{{ produto.name }}" />
+            <div class="card-body">
+              <h6 class="card-title">{{ produto.name }}</h6>
+
+              <p class="card-text text-success fw-bold">
+                R$ {{ produto.preco_atual.toFixed(2) }}
+              </p>
+
+              <p class="text-muted" *ngIf="produto.preco_original > produto.preco_atual">
+                De: R$ {{ produto.preco_original.toFixed(2) }}
+              </p>
+
+              <p class="text-success">
+                em até <strong>12x</strong> de
+                <strong>R$ {{ (produto.preco_atual / 12).toFixed(2) }}</strong>
+              </p>
+
+              <div *ngIf="produto.desconto > 0" class="badge bg-success">
+                ↓ {{ produto.desconto }}%
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="row">
+  <div class="col-md-3 mb-4" *ngFor="let produto of produtosPaginados">
+    <a [routerLink]="['/produto', produto.id]" class="text-decoration-none text-dark">
+      <div class="card h-100" style="cursor: pointer;">
+        <img [src]="produto.image_url" class="card-img-top" alt="{{ produto.name }}" />
+        <div class="card-body">
+          <h6 class="card-title">{{ produto.name }}</h6>
+
+          <p class="card-text text-success fw-bold">
+            R$ {{ produto.preco_atual.toFixed(2) }}
+          </p>
+
+          <p class="text-muted" *ngIf="produto.preco_original > produto.preco_atual">
+            De: R$ {{ produto.preco_original.toFixed(2) }}
+          </p>
+
+          <p class="text-success">
+            em até <strong>12x</strong> de
+            <strong>R$ {{ (produto.preco_atual / 12).toFixed(2) }}</strong>
+          </p>
+
+          <div *ngIf="produto.desconto > 0" class="badge bg-success">
+            ↓ {{ produto.desconto }}%
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+
+      <!-- Paginação -->
+      <nav class="d-flex justify-content-center">
+        <ul class="pagination">
+          <li class="page-item" [class.disabled]="paginaAtual === 1">
+            <button class="page-link" (click)="irParaPagina(paginaAtual - 1)">Anterior</button>
+          </li>
+
+          <li
+            class="page-item"
+            *ngFor="let pagina of totalPaginas"
+            [class.active]="pagina === paginaAtual"
+          >
+            <button class="page-link" (click)="irParaPagina(pagina)">{{ pagina }}</button>
+          </li>
+
+          <li class="page-item" [class.disabled]="paginaAtual === totalPaginas.length">
+            <button class="page-link" (click)="irParaPagina(paginaAtual + 1)">Próxima</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
 </div>
