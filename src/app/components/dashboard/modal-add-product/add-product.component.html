@@ -1,0 +1,101 @@
+<div class="modal-header">
+  <h5 class="modal-title">Adicionar Produto</h5>
+  <button type="button" class="btn-close" aria-label="Fechar" (click)="modal.dismiss()"></button>
+</div>
+
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+
+    <!-- Nome -->
+    <div class="mb-3">
+      <label for="name" class="form-label fw-semibold">Nome</label>
+      <input id="name" formControlName="name" type="text" class="form-control" placeholder="Nome do produto" required />
+    </div>
+
+    <!-- Descrição -->
+    <div class="mb-3">
+      <label for="description" class="form-label fw-semibold">Descrição</label>
+      <textarea id="description" formControlName="description" class="form-control" rows="3"
+        placeholder="Descrição detalhada do produto" required></textarea>
+    </div>
+
+    <!-- Categoria -->
+    <div class="mb-3">
+      <label for="category" class="form-label fw-semibold">Categoria</label>
+      <select id="category" formControlName="category" class="form-select" (change)="onCategoryChange($event)">
+        <option value="" disabled selected>Selecione uma categoria</option>
+        <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+      </select>
+    </div>
+
+    <!-- Campos adicionais baseados na categoria -->
+   <div *ngIf="categorySelected && categorySelected !== 'Tênis'" class="mb-3">
+  <label class="form-label fw-semibold">Tamanhos Disponíveis</label>
+  <div class="row">
+    <div class="col-6 col-md-4" *ngFor="let size of availableSizes; let i = index">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" [value]="size" (change)="onSizeChange(size, $event)" [checked]="selectedSizes.includes(size)" id="size-{{ size }}">
+        <label class="form-check-label" for="size-{{ size }}">
+          {{ size }}
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="categorySelected === 'Tênis'" class="mb-3">
+  <label class="form-label fw-semibold">Números Disponíveis</label>
+  <div class="row">
+    <div class="col-6 col-md-4" *ngFor="let size of availableShoeSizes; let i = index">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" [value]="size" (change)="onShoeSizeChange(size, $event)" [checked]="selectedShoeSizes.includes(size)" id="shoeSize-{{ size }}">
+        <label class="form-check-label" for="shoeSize-{{ size }}">
+          {{ size }}
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Campos numéricos lado a lado -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <label for="preco_original" class="form-label fw-semibold">Preço Original</label>
+        <input id="preco_original" formControlName="preco_original" type="number" min="0" step="0.01"
+          class="form-control" placeholder="R$ 0,00" />
+      </div>
+
+      <div class="col-md-4">
+        <label for="preco_atual" class="form-label fw-semibold">Preço Atual</label>
+        <input id="preco_atual" formControlName="preco_atual" type="number" min="0" step="0.01" class="form-control"
+          placeholder="R$ 0,00" readonly />
+      </div>
+
+      <div class="col-md-4">
+        <label for="desconto" class="form-label fw-semibold">Desconto (%)</label>
+        <input id="desconto" formControlName="desconto" type="number" min="0" max="100" step="1" class="form-control"
+          placeholder="%" />
+      </div>
+
+    </div>
+    <div class="mb-3">
+      <label for="image_cover" class="form-label fw-semibold">Imagem de Capa (1 imagem máxima)</label>
+      <input id="image_cover" type="file" (change)="onCoverImageChange($event)" class="form-control" accept="image/*" />
+      <div *ngIf="coverImageError" class="text-danger mt-1">{{ coverImageError }}</div>
+    </div>
+    <!-- Upload imagens -->
+    <div class="mb-3">
+      <label for="images" class="form-label fw-semibold">Imagens (até 5, máx 150KB cada)</label>
+      <input id="images" type="file" (change)="onFileChange($event)" multiple class="form-control" accept="image/*" />
+      <div *ngIf="imageError" class="text-danger mt-1">{{ imageError }}</div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="submit" class="btn btn-success" [disabled]="productForm.invalid || isSubmitting">
+      Salvar Produto
+    </button>
+  </div>
+</form>

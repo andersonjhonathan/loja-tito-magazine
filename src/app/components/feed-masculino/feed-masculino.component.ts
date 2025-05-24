@@ -59,7 +59,7 @@ import { ProductService, Product } from '../../services/product.service';
   styleUrls: ['./feed-masculino.component.css'],
 })
 export class FeedMasculinoComponent implements OnInit {
-  camisas: Product[] = [];
+  masculinas: Product[] = [];
   carregando = true;
 
   constructor(private productService: ProductService) {}
@@ -68,7 +68,9 @@ export class FeedMasculinoComponent implements OnInit {
   this.productService.getProducts().subscribe({
     next: (produtos) => {
       console.log(produtos)
-      this.camisas = produtos;
+      this.masculinas = produtos
+      .filter(c => c.category?.toLowerCase() === 'masculinas')
+      .slice(0, 4);
       this.carregando = false;
     },
     error: (error) => {
@@ -77,8 +79,6 @@ export class FeedMasculinoComponent implements OnInit {
     }
   });
 }
-
-
 }
 
 

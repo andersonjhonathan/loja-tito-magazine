@@ -1,4 +1,4 @@
-<div
+<div *ngIf="popoverAberto"
   class="popover fade show bs-popover-bottom"
   role="tooltip"
   style="position: fixed; top: 70px; left: calc(100vw - 220px); z-index: 1050;"
@@ -6,7 +6,7 @@
 >
   <div class="popover-arrow"></div>
   <div class="popover-body">
-    <div class="form-container" [ngClass]="{ 'form-left': !isCadastro && !isRecuperarSenha, 'form-middle': isCadastro, 'form-right': isRecuperarSenha }">
+    <div *ngIf="!usuarioLogado" class="form-container" [ngClass]="{ 'form-left': !isCadastro && !isRecuperarSenha, 'form-middle': isCadastro, 'form-right': isRecuperarSenha }">
       <h5 class="mb-2">
         {{ isCadastro ? 'Criar sua conta' : isRecuperarSenha ? 'Recuperar senha' : 'Entrar em minha conta' }}
       </h5>
@@ -35,7 +35,9 @@
       <div *ngIf="erro" class="alert alert-danger p-2 py-1 mb-2 text-center small">
         {{ erro }}
       </div>
-
+<div *ngIf="sucesso" class="alert alert-success p-2 py-1 mb-2 text-center small">
+  {{ sucesso }}
+</div>
       <div class="text-center">
         <small>
           <a href="#" class="text-decoration-none" (click)="toggleCadastro()">
@@ -47,6 +49,13 @@
         </small>
       </div>
     </div>
+<div *ngIf="usuarioLogado" class="text-center">
+  <h5 class="mb-3">Olá, {{ usuarioLogado.name }}!</h5>
+  <button class="btn btn-outline-danger w-100" (click)="logout()">Sair da conta</button>
+</div>
+
+
+    
   </div>
 </div>
 

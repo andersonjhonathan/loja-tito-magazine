@@ -1,8 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, HostListener  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, style, animate, transition } from '@angular/animations';
-import { AuthService } from './auth.service';
+import { AuthService, Usuario  } from './auth.service';
+import { Router } from '@angular/router';
+import { supabase } from '../../../services/supabase.client';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-login-popover',
@@ -27,13 +30,35 @@ export class LoginPopoverComponent {
   isCadastro: boolean = false;
   isRecuperarSenha: boolean = false;
   isAdmin: boolean = false;
+  usuarioLogado: Usuario | null = null;
+  sucesso: string = '';
+  popoverAberto: boolean = true;
 
   @Output() fecharPopover = new EventEmitter<void>();
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService, 
+    private router: Router, 
+    private eRef: ElementRef,
+    private toastService: ToastService
+  ) {}
+
+  @HostListener('document:click', ['$event'])
+  onClickFora(event: MouseEvent) {
+    if (!this.eRef.nativeElement.contains(event.target)) {
+      this.popoverAberto = false;
+    }
+  }
+
+  ngOnInit(): void {
+    this.authService.usuario$.subscribe((usuario) => {
+      this.usuarioLogado = usuario;
+    });
+  }
 
   toggleCadastro() {
     this.isCadastro = !this.isCadastro; // Alterna entre login e cadastro
+    this.isRecuperarSenha = false;
   }
 
   toggleRecuperarSenha() {
@@ -41,25 +66,90 @@ export class LoginPopoverComponent {
     this.isCadastro = false; // Garante que o estado de cadastro seja desativado
   }
 
-  login() {
-    const loginSuccess = this.authService.login(this.email, this.senha);
-    
-    if (loginSuccess) {
-      this.erro = '';
-      alert('Login realizado com sucesso!');
-      this.fecharPopover.emit();
+  // }
+
+  async login() {
+  const success = await this.authService.login(this.email, this.senha);
+
+  if (success) {
+    this.erro = '';
+    this.toastService.success('Login realizado com sucesso.');
+    this.fecharPopover.emit();
+  } else {
+    this.erro = 'E-mail ou senha inválidos.';
+  }
+}
+
+// async cadastrar() {
+//   if (this.senha !== this.confirmarSenha) {
+//     this.erro = 'As senhas não coincidem.';
+//     return;
+//   }
+
+
+
+//   const erro = await this.authService.cadastrar(this.nome, this.email, this.senha);
+
+//   if (erro) {
+//     this.erro = erro;
+//   } else {
+//     this.erro = '';
+//     alert('Conta criada com sucesso! Você já pode fazer login.');
+//     this.toggleCadastro();
+//   }
+// }
+
+async cadastrar() {
+  if (this.senha !== this.confirmarSenha) {
+    this.erro = 'As senhas não coincidem.';
+    return;
+  }
+
+  const { error } = await supabase
+    .from('users')
+    .insert([
+      {
+        name: this.nome,
+        email: this.email,
+        password: this.senha, // ⚠️ Em produção: use hash (bcrypt)
+        role: 'user'
+      }
+    ]);
+
+  if (error) {
+    if (error.code === '23505') {
+      this.erro = 'Este e-mail já está cadastrado.';
     } else {
-      this.erro = 'E-mail ou senha inválidos.';
+      this.erro = 'Erro ao cadastrar: ' + error.message;
     }
+    return;
   }
 
-  cadastrar() {
-    // Lógica para cadastro
-    console.log('Cadastro:', this.nome, this.email, this.senha, this.confirmarSenha);
-  }
+  // Limpar campos e mensagens
+  this.nome = '';
+  this.email = '';
+  this.senha = '';
+  this.confirmarSenha = '';
+  this.erro = '';
+  this.sucesso = 'Cadastro realizado com sucesso!';
+}
 
-  recuperarSenha() {
-    // Lógica para recuperação de senha
-    console.log('Recuperar senha:', this.email);
+
+async recuperarSenha() {
+  const erro = await this.authService.recuperarSenha(this.email);
+
+  if (erro) {
+    this.erro = erro;
+  } else {
+    this.erro = '';
+    this.toastService.success('Instruções para redefinir sua senha foram enviadas.');
+    this.toggleRecuperarSenha();
   }
+}
+
+logout() {
+  this.authService.logout();
+  window.location.href = '/';
+}
+
 }

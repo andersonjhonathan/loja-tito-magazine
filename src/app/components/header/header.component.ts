@@ -2,7 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { LoginPopoverComponent } from './modal-login/login-popover.component';
-import { AuthService } from './modal-login/auth.service';
+import { AuthService, Usuario } from './modal-login/auth.service';
 import { Subscription } from 'rxjs';
 import { CartService } from '../../services/cart.service';
 
@@ -19,6 +19,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   mostrarPopover = false;
   popoverPosition = { top: '0px', left: '0px' };
   quantidadeCarrinho: number = 0;
+  usuarioLogado: Usuario | null = null;
   
   constructor(private authService: AuthService, private router: Router, private cartService: CartService) {}
   private authSubscription: Subscription | null = null;
@@ -28,6 +29,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Inscrever-se para mudanças no estado de admin
     this.authSubscription = this.authService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
+    });
+
+    this.authService.usuario$.subscribe((usuario) => {
+      this.usuarioLogado = usuario;
+
+      if (usuario && usuario.id) {
+      this.cartService.loadCart(usuario.id);
+    }
     });
 
     this.cartService.cart$.subscribe(items => {
@@ -62,5 +71,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   navegarParaDashboard() {
     this.router.navigate(['/dashboard']);
   }
+
+  logout() {
+  this.authService.logout();
+}
   
 }
