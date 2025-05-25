@@ -1,97 +1,17 @@
-<!-- <div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;" *ngIf="items.length === 0">
-    <i class="bi bi-cart2" style="font-size: 48px; margin-bottom: 16px;"></i>
-    <h4 class="mb-3">Seu carrinho está vazio</h4>
-    <button class="btn px-4 py-2 fw-bold text-white" style="background-color: #079cff; border-radius: 12px;" (click)="todosOsProdutos()">
-      Veja nossos produtos
-    </button>
-  </div>
-
-  <div class="container my-5" *ngIf="items.length > 0">
-    <h4 class="mb-4">Meu carrinho</h4>
-  
-    <div class="row">
-      <div class="col-md-8">
-        <div class="bg-white p-4 rounded-4 shadow border">
-          <div class="row fw-bold border-bottom pb-2 mb-3">
-            <div class="col-7">Produto</div>
-            <div class="col-3 text-center">Quantidade</div>
-            <div class="col-2 text-end">Total</div>
-          </div>
-  
-          <div *ngFor="let item of items; let i = index" class="row align-items-center mb-4">
-            <div class="col-7 d-flex align-items-center">
-              <img [src]="item.imagemPrincipal" alt="{{item.nome}}" width="80" class="me-3 rounded" />
-              <div>
-                <p class="mb-1">{{ item.nome }}</p>
-                <span class="text-success fw-semibold">R$ {{ item.precoPromocional | number:'1.2-2' }}</span>
-                <span class="text-muted text-decoration-line-through ms-2">R$ {{ item.precoOriginal | number:'1.2-2' }}</span>
-              </div>
-            </div>
-  
-            <div class="col-3 text-center">
-              <div class="d-flex justify-content-center align-items-center">
-                <div class="btn-group shadow-sm" role="group">
-                  <button class="btn btn-light border-end-0 rounded-start" (click)="decrementar(item)">-</button>
-                  <span class="bg-light border-start-0 border-end-0 px-3 py-1 d-flex align-items-center">{{ item.quantidade }}</span>
-                  <button class="btn btn-light border-start-0 rounded-end" (click)="incrementar(item)">+</button>
-                </div>
-              </div>
-              <div>
-                <a href="#" class="text-danger small mt-1 d-inline-block" (click)="removerItem(i); $event.preventDefault()">Remover</a>
-            </div>
-            </div>
-  
-            <div class="col-2 text-end fw-semibold" style="margin-top: -25px;">
-              R$ {{ (item.precoPromocional * item.quantidade) | number:'1.2-2' }}
-            </div>
-          </div>
-        </div>
-      </div>
-  
-
-      <div class="col-md-4">
-        <div class="bg-white p-4 rounded-4 shadow border">
-          <div class="d-flex justify-content-between mb-2">
-            <strong>Total</strong>
-            <strong>R$ {{ calcularTotal() | number:'1.2-2' }}</strong>
-          </div>
-          <p class="text-success fw-semibold mb-1" style="color: #00D864 !important; font-family: sans-serif;">Você economizou R$ {{ calcularEconomia() | number:'1.2-2' }}!</p>
-          <span class="badge bg-success rounded-4 mb-3" style="background-color: #00D864 !important; font-family: sans-serif;">PIX/CARTÃO RECEBA 3 DIAS ANTES</span>
-  
-          <div class="form-group mb-3">
-            <label for="envio">Instruções de envio</label>
-            <select class="form-control" id="envio">
-              <option>Selecione...</option>
-              <option>Retirar na loja</option>
-              <option>Entrega expressa</option>
-            </select>
-          </div>
-  
-          <button class="btn botaoFinalizar w-100 fw-bold mb-3">FINALIZAR COMPRA</button>
-          <button class="btn botaoTodosProdutos w-100 fw-bold" (click)="todosOsProdutos()">CONTINUAR COMPRANDO</button>
-        </div>
-  
-        <div class="text-center mt-3 text-muted">
-          <i class="bi bi-lock-fill me-2"></i>Pagamento Seguro <br />
-          <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" width="60" />
-        </div>
-      </div>
-    </div>
-  </div>
-  <app-benefits></app-benefits>
-   -->
-
-   <!-- Carrinho vazio -->
-<div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;" *ngIf="items.length === 0 && isLoggedIn">
+<!-- Carrinho vazio -->
+<div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;"
+  *ngIf="items.length === 0 && isLoggedIn">
   <i class="bi bi-cart2" style="font-size: 48px; margin-bottom: 16px;"></i>
   <h4 class="mb-3">Seu carrinho está vazio</h4>
-  <button class="btn px-4 py-2 fw-bold text-white" style="background-color: #079cff; border-radius: 12px;" (click)="todosOsProdutos()">
+  <button class="btn px-4 py-2 fw-bold text-white" style="background-color: #079cff; border-radius: 12px;"
+    (click)="todosOsProdutos()">
     Veja nossos produtos
   </button>
 </div>
 
 <!-- Caso o usuário não esteja logado -->
-<div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;" *ngIf="!isLoggedIn">
+<div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;"
+  *ngIf="!isLoggedIn">
   <i class="bi bi-person-circle" style="font-size: 48px; margin-bottom: 16px;"></i>
   <h4 class="mb-3">Faça login para visualizar seu carrinho</h4>
 </div>
@@ -115,8 +35,9 @@
             <img [src]="item.imagemPrincipal" alt="{{item.nome}}" width="80" class="me-3 rounded" />
             <div>
               <p class="mb-1">{{ item.nome }}</p>
-              <span class="text-success fw-semibold">R$ {{ item.precoPromocional | number:'1.2-2' }}</span>
-              <span class="text-muted text-decoration-line-through ms-2">R$ {{ item.precoOriginal | number:'1.2-2' }}</span>
+              <span class="text-success fw-semibold">R$ {{ item.preco_final | number:'1.2-2' }}</span>
+              <span class="text-muted text-decoration-line-through ms-2">R$ {{ item.precoOriginal | number:'1.2-2'
+                }}</span>
             </div>
           </div>
 
@@ -124,17 +45,19 @@
             <div class="d-flex justify-content-center align-items-center">
               <div class="btn-group shadow-sm" role="group">
                 <button class="btn btn-light border-end-0 rounded-start" (click)="decrementar(item)">-</button>
-                <span class="bg-light border-start-0 border-end-0 px-3 py-1 d-flex align-items-center">{{ item.quantity }}</span>
+                <span class="bg-light border-start-0 border-end-0 px-3 py-1 d-flex align-items-center">{{ item.quantity
+                  }}</span>
                 <button class="btn btn-light border-start-0 rounded-end" (click)="incrementar(item)">+</button>
               </div>
             </div>
             <div>
-              <a href="#" class="text-danger small mt-1 d-inline-block" (click)="removerItem(item.id); $event.preventDefault()">Remover</a>
+              <a href="#" class="text-danger small mt-1 d-inline-block"
+                (click)="removerItem(item.id); $event.preventDefault()">Remover</a>
             </div>
           </div>
 
           <div class="col-2 text-end fw-semibold" style="margin-top: -25px;">
-            R$ {{ (item.precoPromocional * item.quantity) | number:'1.2-2' }}
+            R$ {{ (item.preco_final * item.quantity) | number:'1.2-2' }}
           </div>
         </div>
       </div>
@@ -152,7 +75,8 @@
           Você economizou R$ {{ calcularEconomia() | number:'1.2-2' }}!
         </p>
 
-        <span class="badge bg-success rounded-4 mb-3" style="background-color: #00D864 !important; font-family: sans-serif;">
+        <span class="badge bg-success rounded-4 mb-3"
+          style="background-color: #00D864 !important; font-family: sans-serif;">
           PIX/CARTÃO RECEBA 3 DIAS ANTES
         </span>
 
@@ -165,7 +89,7 @@
           </select>
         </div>
 
-        <button class="btn botaoFinalizar w-100 fw-bold mb-3">FINALIZAR COMPRA</button>
+        <button class="btn botaoFinalizar w-100 fw-bold mb-3" (click)="finalizarCompra()">FINALIZAR COMPRA</button>
         <button class="btn botaoTodosProdutos w-100 fw-bold" (click)="todosOsProdutos()">CONTINUAR COMPRANDO</button>
       </div>
 

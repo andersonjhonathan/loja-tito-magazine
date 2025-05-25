@@ -1,59 +1,3 @@
-// import { Injectable } from '@angular/core';
-// import { BehaviorSubject } from 'rxjs';
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class CartService {
-//   private storageKey = 'carrinho_produtos';
-//   private items: any[] = [];
-
-//   private cartSubject = new BehaviorSubject<any[]>([]);
-//   cart$ = this.cartSubject.asObservable();
-
-//   constructor() {
-//     this.carregarCarrinho();
-//   }
-
-//   private isBrowser: boolean = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
-
-//   private salvarCarrinho() {
-//     if (this.isBrowser) {
-//       localStorage.setItem(this.storageKey, JSON.stringify(this.items));
-//       this.cartSubject.next(this.items);
-//     }
-//   }
-
-//   private carregarCarrinho() {
-//     if (this.isBrowser) {
-//       const dadosSalvos = localStorage.getItem(this.storageKey);
-//       if (dadosSalvos) {
-//         this.items = JSON.parse(dadosSalvos);
-//         this.cartSubject.next(this.items);
-//       }
-//     }
-//   }
-
-//   addToCart(product: any) {
-//     this.items.push(product);
-//     this.salvarCarrinho();
-//   }
-
-//   getItems() {
-//     return [...this.items];
-//   }
-
-//   clearCart() {
-//     this.items = [];
-//     this.salvarCarrinho();
-//   }
-
-//   removeItem(index: number) {
-//     this.items.splice(index, 1);
-//     this.salvarCarrinho();
-//   }
-// }
-
 // cart.service.ts
 import { Injectable } from '@angular/core';
 import { ProductService } from '../services/product.service';
@@ -73,26 +17,22 @@ export class CartService {
     this.cartItemsSubject.next(items || []);
   }
 
-  // async addToCart(userId: string, productId: string, size: string, quantity: number) {
-  //   const { data, error } = await this.productService.client
-  //     .from('cart_items')
-  //     .insert([{ user_id: userId, product_id: productId, size, quantity }]);
-
-  //   if (error) {
-  //     console.error('Erro ao adicionar ao carrinho:', error);
-  //   }
-  //   await this.loadCart(userId);
-  //   return data;
-  // }
-
-  async addToCart(userId: string, productId: string, size: string, quantity: number) {
+  async addToCart(
+    userId: string, 
+    productId: string, 
+    size: string, 
+    quantity: number,
+    personalizar?: boolean,
+    preco_final?: number
+  ) {
   // Tenta buscar o item existente no carrinho com base em user_id, product_id e size
   const { data: existingItems, error: selectError } = await this.productService.client
     .from('cart_items')
     .select('id')
     .eq('user_id', userId)
     .eq('product_id', productId)
-    .eq('size', size);
+    .eq('size', size)
+    .eq('personalizar', personalizar ?? false);
 
   if (selectError) {
     console.error('Erro ao verificar item no carrinho:', selectError);
@@ -103,10 +43,11 @@ export class CartService {
     // Atualiza a quantidade se já existir
     const { error: updateError } = await this.productService.client
       .from('cart_items')
-      .update({ quantity })
+      .update({ quantity, personalizar, preco_final })
       .eq('user_id', userId)
       .eq('product_id', productId)
-      .eq('size', size);
+      .eq('size', size)
+      .eq('personalizar', personalizar ?? false);
 
     if (updateError) {
       console.error('Erro ao atualizar item no carrinho:', updateError);
@@ -115,7 +56,14 @@ export class CartService {
     // Insere novo item se ainda não existir
     const { error: insertError } = await this.productService.client
       .from('cart_items')
-      .insert([{ user_id: userId, product_id: productId, size, quantity }]);
+      .insert([{ 
+        user_id: userId, 
+        product_id: productId, 
+        size, 
+        quantity, 
+        personalizar: personalizar ?? false, 
+        preco_final 
+      }]);
 
     if (insertError) {
       console.error('Erro ao adicionar item no carrinho:', insertError);
@@ -136,6 +84,8 @@ export class CartService {
         product_id,
         size,
         quantity,
+        preco_final,
+        personalizar,
         products (
           name,
           image_url,

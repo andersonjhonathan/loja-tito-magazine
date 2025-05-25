@@ -88,12 +88,16 @@ export class PageProductComponent {
 
     this.loading = true;
 
+    const precoFinal = this.personalizar ? this.produto.preco_atual + 20 : this.produto.preco_atual;
+
     try {
       await this.cartService.addToCart(
         itemCarrinho.userId,
         itemCarrinho.productId,
         itemCarrinho.size,
-        itemCarrinho.quantity
+        itemCarrinho.quantity,
+        itemCarrinho.personalizar,
+        precoFinal
       );
 
       this.router.navigate(['/carrinho']);

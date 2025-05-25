@@ -33,29 +33,28 @@ export class CartComponent implements OnInit {
       this.userId = user.id;
       this.isLoggedIn = true;
 
-      // Itens do carrinho (com productId, size, quantity etc)
       const cartItems = await this.cartService.getCartItems(this.userId) || [];
 
-      // Agora você pode buscar os detalhes de cada produto pelo productId
-      const itemsCompletos = await Promise.all(
-        cartItems.map(async (item) => {
-          const produto = await this.cartService.getProductById(item.product_id);
-          return {
-            ...item,
-            nome: produto.name,
-            imagemPrincipal: produto.image_url,
-            precoOriginal: produto.preco_original,
-            precoPromocional: produto.preco_atual,
-          };
-        })
-      );
+      this.items = cartItems.map(item => {
+        const produto = Array.isArray(item.products) ? item.products[0] : item.products;
+        return {
+          id: item.id,
+          product_id: item.product_id,
+          size: item.size,
+          quantity: item.quantity,
+          personalizar: item.personalizar,
+          preco_final: item.preco_final,
+          nome: produto.name,
+          imagemPrincipal: produto.image_url,
+          precoOriginal: produto.preco_original,
+          precoPromocional: produto.preco_atual,
+        };
+      });
 
-      this.items = itemsCompletos;
     } else {
       this.isLoggedIn = false;
     }
   }
-
 
   async removerItem(itemId: string) {
     if (!this.isLoggedIn) return;
@@ -69,7 +68,14 @@ export class CartComponent implements OnInit {
     if (!this.isLoggedIn) return;
 
     const novaQuantidade = item.quantity + 1;
-    await this.cartService.addToCart(this.userId, item.product_id, item.size, novaQuantidade);
+    await this.cartService.addToCart(
+      this.userId,
+      item.product_id,
+      item.size,
+      novaQuantidade,
+      item.personalizar,
+      item.preco_final
+    );
 
     item.quantity = novaQuantidade;
   }
@@ -78,10 +84,18 @@ export class CartComponent implements OnInit {
     if (!this.isLoggedIn || item.quantity <= 1) return;
 
     const novaQuantidade = item.quantity - 1;
-    await this.cartService.addToCart(this.userId, item.product_id, item.size, novaQuantidade);
+    await this.cartService.addToCart(
+      this.userId,
+      item.product_id,
+      item.size,
+      novaQuantidade,
+      item.personalizar,
+      item.preco_final
+    );
 
     item.quantity = novaQuantidade;
   }
+
 
 
   todosOsProdutos() {
@@ -91,8 +105,8 @@ export class CartComponent implements OnInit {
   calcularTotal(): number {
     if (!this.items || this.items.length === 0) return 0;
     return this.items.reduce((total, item) => {
-      const preco = Number(item.precoPromocional) || 0;
-      const qtd = Number(item.quantity) || 0; // Corrigido aqui
+      const preco = Number(item.preco_final) || 0;
+      const qtd = Number(item.quantity) || 0;
       return total + (preco * qtd);
     }, 0);
   }
@@ -102,9 +116,14 @@ export class CartComponent implements OnInit {
     return this.items.reduce((economia, item) => {
       const precoOriginal = Number(item.precoOriginal) || 0;
       const precoPromocional = Number(item.precoPromocional) || 0;
-      const qtd = Number(item.quantity) || 0; // Corrigido aqui
+      const qtd = Number(item.quantity) || 0;
       return economia + ((precoOriginal - precoPromocional) * qtd);
     }, 0);
+  }
+
+
+  finalizarCompra() {
+    this.router.navigate(['/checkout']);
   }
 
 
