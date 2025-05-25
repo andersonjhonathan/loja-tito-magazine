@@ -9,7 +9,7 @@
 }
 
 .botaoFinalizar{
-    background-color: #FBC500;
+    background-color: #0097fb;
     color: white;
     padding: 13px;
     border-radius: 12px;
@@ -17,7 +17,7 @@
 }
 
 .botaoFinalizar:hover{
-    background-color: #f8ce35;
+    background-color: #35aaf8;
 }
 
 .botaoTodosProdutos{
