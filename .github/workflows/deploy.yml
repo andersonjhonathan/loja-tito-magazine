@@ -5,26 +5,28 @@ on:
     branches:
       - main
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+permissions:
+  contents: write
 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout do repositório
+      - name: Checkout source
         uses: actions/checkout@v3
 
-      - name: Configura o Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Instala dependências
-        run: npm install
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build do Angular
+      - name: Build project
         run: npm run build -- --configuration production
 
-      - name: Deploy para GitHub Pages
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
