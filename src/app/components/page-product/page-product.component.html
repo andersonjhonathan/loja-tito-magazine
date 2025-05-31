@@ -1,5 +1,5 @@
 <div class="container my-5" *ngIf="produto">
-  <div class="row g-4">
+  <div class="row g-4" *ngIf="!isMobile">
 
     <!-- Galeria de Imagens -->
     <div class="col-md-6">
@@ -202,4 +202,182 @@
       </div>
     </div>
   </div>
+
+  <!---Versão Mobile-->
+
+  <div class="row g-4" *ngIf="isMobile">
+    <div class="d-block d-md-none">
+      <div class="rounded-4 p-3">
+        <div class="text-center">
+          <img [src]="produto.image_url" class="img-fluid rounded mb-2"
+            style="max-height: 350px; object-fit: contain;" />
+          <div class="d-flex gap-2 justify-content-center flex-wrap">
+            <img *ngFor="let img of produto.image_urls" [src]="img" class="img-thumbnail" width="60"
+              style="cursor: pointer;" (click)="produto.image_url = img" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informações do Produto -->
+    <div class="col-md-6">
+      <div class="rounded-4 p-2">
+        <!-- <p class="text-muted mb-1">Novo | {{ produto.vendidos }} Vendidos</p> -->
+        <p class="text-muted mb-1">Novo | 10 Vendidos</p>
+        <h4>{{ produto.name }}</h4>
+        <!-- <p class="text-muted">Cód. Item {{ produto.codigo }}</p> -->
+        <p class="text-muted">Cód. Item TESTE-003</p>
+        <p class="text-primary rounded"
+          style="background-color: rgb(218, 250, 250); display: inline-block; padding: 2px 6px; margin: 0;">
+          Vendido e enviado pela <span class="fw-bold">Tito Magazine ⓒ</span>
+        </p>
+
+
+        <!-- Tamanhos -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">Tamanho:</label>
+          <div class="d-flex flex-wrap gap-2">
+            <button *ngFor="let t of produto.tamanhos" type="button" class="btn" [ngClass]="{
+              'btn-primary': t === tamanhoSelecionado,
+              'btn-outline-primary': t !== tamanhoSelecionado
+            }" [attr.aria-pressed]="t === tamanhoSelecionado" (click)="tamanhoSelecionado = t">
+              {{ t }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Personalização -->
+        <div>
+          <label class="form-label fw-bold">Personalizar (+R$ 20):</label>
+          <div class="d-flex flex-wrap">
+            <button class="btn btn-outline-secondary me-2 mb-1" [class.active]="!personalizar"
+              (click)="personalizar = false">
+              Não Personalizar
+            </button>
+            <button class="btn btn-outline-secondary me-2 mb-1" [class.active]="personalizar"
+              (click)="personalizar = true">
+              Personalizar
+            </button>
+          </div>
+
+          <!-- Inputs aparecem somente se personalizar for true -->
+          <div *ngIf="personalizar" class="mt-2 m-5 pt-4">
+            <div class="mb-2">
+              <i class="bi bi-person-fill pe-1 iconColor"></i>
+              <label for="nomeCamisa" class="form-label">SEU NOME:</label>
+              <input type="text" id="nomeCamisa" class="form-control rounded-3" [(ngModel)]="nomePersonalizado"
+                placeholder="Digite seu nome ou apelido">
+            </div>
+            <div>
+              <i class="fa fa-futbol pe-1 iconColor"></i>
+              <label for="numeroCamisa" class="form-label">SEU NÚMERO:</label>
+              <input type="text" class="form-control rounded-3" [(ngModel)]="numeroPersonalizado" maxlength="2"
+                pattern="[0-9]*" inputmode="numeric" (input)="limitarNumero($event)"
+                placeholder="Número da camisa (máx. 2 dígitos)">
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Patch -->
+        <!-- <div class="mb-3">
+          <label class="form-label fw-bold">Adicionar Patch (+R$15):</label>
+          <div class="d-flex flex-wrap">
+            <button class="btn btn-outline-secondary me-2 mb-1" [class.active]="!patchSelecionado"
+              (click)="patchSelecionado = false">Sem Patch</button>
+            <button class="btn btn-outline-secondary me-2 mb-1" [class.active]="patchSelecionado"
+              (click)="patchSelecionado = true">Campeão Copa do Brasil 2024</button>
+          </div>
+        </div> -->
+
+        <!-- Preço -->
+        <div class="p-3 mb-5 mt-4 d-flex align-items-center">
+          <div class="pe-5">
+            <p>Preço:</p>
+          </div>
+          <div>
+            <p class="text-muted text-decoration-line-through mb-1">
+              DE R$ {{ produto.preco_original| number:'1.2-2' }}
+            </p>
+
+            <h3 class="text-success mb-1" style="color: #0FB930 !important">
+              R$ {{ valorTotal | number:'1.2-2' }}
+            </h3>
+
+            <p class="text-muted mb-1">
+              em até 12x de <strong>R$ {{ valorTotal / 12 | number:'1.2-2' }}</strong>
+            </p>
+
+            <span class="badge bg-success rounded-4" style="background-color: #00D864 !important;">
+              R$ {{ produto.preco_original | number:'1.2-2' }} de desconto
+            </span>
+          </div>
+        </div>
+
+        <div id="box-frete"
+          style="display: flex; align-items: center; border: 2px solid #4e4e4e; border-radius: 10px; padding: 10px 15px; font-family: Arial, sans-serif; max-width: 500px;">
+          <img src="assets/correios-logo_1.svg" alt="Correios" width="40" height="40" style="margin-right: 12px;">
+          <div style="flex: 1;">
+            <div style="font-size: 14px; color: #333;">Entrega via Correios ©</div>
+            <div id="localizacao" style="font-size: 14px; color: #555;">
+              Envio para <b>{{ localizacao }}</b>
+            </div>
+          </div>
+          <div style="font-weight: bold; font-size: 14px; color: #000;">Frete Grátis</div>
+        </div>
+
+
+        <!-- Ações -->
+        <div class="d-grid gap-2 mt-4 mb-3">
+          <button class="btn btn-success btn-lg" (click)="ComprarProduto()">Comprar agora</button>
+          <button class="btn btn-outline-primary" [disabled]="loading" (click)="adicionarAoCarrinho()"
+            style="font-family: sans-serif;">
+            <span *ngIf="!loading">Adicionar ao carrinho</span>
+            <span *ngIf="loading">
+              <i class="spinner-border spinner-border-sm me-1"></i>
+              Adicionando ao carrinho...
+            </span>
+          </button>
+          <button class="btn btn-outline-success">
+            <i class="bi bi-whatsapp me-1"></i> Comprar pelo WhatsApp
+          </button>
+        </div>
+
+        <div class="rounded shadow-sm overflow-hidden" style="max-width: 100%; background-color: #f7f7f7;">
+          <div class="d-flex align-items-center gap-3 p-3">
+            <img src="assets/pagamento_card.svg" alt="Pagamento" width="50" height="50" />
+            <div>
+              <p class="mb-0 fw-semibold text-dark">Parcele suas compras</p>
+              <small class="text-success fw-bold">nas melhores bandeiras</small>
+            </div>
+          </div>
+          <div class="bg-white px-3 py-2 d-flex flex-wrap justify-content-center gap-3">
+            <img src="assets/bandeiras/amex.svg" alt="American Express" width="40" />
+            <img src="assets/bandeiras/boleto.svg" alt="Boleto" width="40" />
+            <img src="assets/bandeiras/mastercard.svg" alt="Mastercard" width="40" />
+            <img src="assets/bandeiras/visa.svg" alt="Visa" width="40" />
+            <img src="assets/bandeiras/elo.svg" alt="Elo" width="40" />
+            <img src="assets/bandeiras/pix.avif" alt="Pix" width="40" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="rounded-4 p-4 mt-4">
+      <h5 class="mb-3 text-center fw-bold">Descrição</h5>
+      <div *ngFor="let linha of produto.description.split('\n')">
+        <p class="mb-2" *ngIf="linha.trim()">
+          <br>
+          <span *ngIf="linha.includes(':')" class="fw-bold text-dark">
+            {{ linha.split(':')[0] }}:
+          </span>
+          <span>
+            {{ linha.split(':').slice(1).join(':').trim() }}
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+<app-benefits></app-benefits>
 </div>

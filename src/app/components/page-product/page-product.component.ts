@@ -7,11 +7,13 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ProductService, Product } from '../../services/product.service';
 import { ToastService } from '../../services/toast.service';
+import { DeviceService } from '../../services/device.service';
+import { BenefitsComponent } from '../benefits/benefits.component';
 
 @Component({
   selector: 'app-page-product',
   standalone: true,
-  imports: [CommonModule, NgxImageZoomModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, NgxImageZoomModule, FormsModule, HttpClientModule, BenefitsComponent],
   templateUrl: './page-product.component.html',
   styleUrl: './page-product.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -25,6 +27,7 @@ export class PageProductComponent {
   numeroPersonalizado: number | null = null;
   localizacao: string = 'Detectando local...';
   loading = false;
+  isMobile: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,13 +35,21 @@ export class PageProductComponent {
     private http: HttpClient,
     private router: Router,
     private productService: ProductService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private deviceService: DeviceService
   ) {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.carregarProduto(id);
     }
     this.buscarLocalizacao();
+  }
+
+  ngOnInit() {
+    this.isMobile = this.deviceService.isMobile();
+    this.deviceService.isMobile$.subscribe(value => {
+      this.isMobile = value;
+    });
   }
 
   carregarProduto(id: string) {

@@ -1,9 +1,11 @@
+<div *ngIf="popoverAberto" class="popover-overlay" (click)="fecharPopoverOver()"></div>
+
 <div *ngIf="popoverAberto"
   class="popover fade show bs-popover-bottom"
   role="tooltip"
-  style="position: fixed; top: 70px; left: calc(100vw - 220px); z-index: 1050;"
   @fadeInOut
->
+(click)="$event.stopPropagation()">
+
   <div class="popover-arrow"></div>
   <div class="popover-body">
     <div *ngIf="!usuarioLogado" class="form-container" [ngClass]="{ 'form-left': !isCadastro && !isRecuperarSenha, 'form-middle': isCadastro, 'form-right': isRecuperarSenha }">

@@ -1,14 +1,16 @@
 div.popover.fade.show.bs-popover-bottom {
-  width: 300px !important; 
-  max-width: 100% !important; 
-  background-color: white !important; 
-  border-radius: 8px !important; 
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; 
-  position: fixed !important; 
-  top: 30% !important; 
-  left: 80% !important; 
-  transform: translate(-50%, -50%) !important; 
-  z-index: 9999 !important; 
+  width: 300px;
+  max-width: 90vw;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  padding: 1rem;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .btn-dark:hover {
@@ -21,4 +23,14 @@ div.popover.fade.show.bs-popover-bottom {
   border-color: #91c5e5 !important;
 }
 
+.popover-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); 
+  z-index: 1049; 
+  backdrop-filter: blur(2px); 
+}
 

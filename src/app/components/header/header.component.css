@@ -12,3 +12,26 @@
     background-color: #91c5e5 !important;
     border-color: #91c5e5 !important;
 }
+
+.logo-mobile {
+  height: 40px;
+}
+
+.input-group input::placeholder {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.input-group {
+  overflow: hidden;
+}
+
+.input-group .form-control {
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+}
+
+.input-group .input-group-text {
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+}

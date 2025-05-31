@@ -1,10 +1,12 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { LoginPopoverComponent } from './modal-login/login-popover.component';
 import { AuthService, Usuario } from './modal-login/auth.service';
 import { Subscription } from 'rxjs';
 import { CartService } from '../../services/cart.service';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-header',
@@ -14,18 +16,24 @@ import { CartService } from '../../services/cart.service';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  @ViewChild('loginBtn', { static: false }) loginButton!: ElementRef;
+  @ViewChild('loginBtn') loginButton!: ElementRef;
+  @ViewChild('loginBtnMobile') loginButtonMobile!: ElementRef;
+  @ViewChild('offcanvasMenu') offcanvasMenu!: ElementRef;
   isAdmin: boolean = false;
-  mostrarPopover = false;
-  popoverPosition = { top: '0px', left: '0px' };
+  mostrarPopoverDesktop: boolean = false;
+  mostrarPopoverMobile: boolean = false;
+  popoverPosition: { top: string; left: string } | null = null;
+  popoverPositionMobile: { top: string; left: string } | null = null;
   quantidadeCarrinho: number = 0;
   usuarioLogado: Usuario | null = null;
-  
-  constructor(private authService: AuthService, private router: Router, private cartService: CartService) {}
+  private navigationSub!: Subscription;
+
+  constructor(private authService: AuthService, private router: Router, private cartService: CartService) { }
   private authSubscription: Subscription | null = null;
 
 
   ngOnInit() {
+    this.checkScreen();
     // Inscrever-se para mudanças no estado de admin
     this.authSubscription = this.authService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
@@ -35,8 +43,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.usuarioLogado = usuario;
 
       if (usuario && usuario.id) {
-      this.cartService.loadCart(usuario.id);
-    }
+        this.cartService.loadCart(usuario.id);
+      }
     });
 
     this.cartService.cart$.subscribe(items => {
@@ -44,25 +52,89 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
+  isMobile: boolean = false;
+
+  @HostListener('window:resize')
+  onResize() {
+    this.checkScreen();
+  }
+
+  private checkScreen() {
+    this.isMobile = window.innerWidth <= 768;
+  }
+
   ngOnDestroy() {
     // Limpar a assinatura ao destruir o componente
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
-    
+
+    if (this.navigationSub) {
+      this.navigationSub.unsubscribe();
+    }
+
   }
-  
-  togglePopover() {
-    this.mostrarPopover = !this.mostrarPopover;
-  
-    if (this.mostrarPopover && this.loginButton?.nativeElement?.getBoundingClientRect) {
-      const rect = this.loginButton.nativeElement.getBoundingClientRect();
-      this.popoverPosition = {
-        top: `${rect.bottom + window.scrollY + 10}px`,
-        left: `${rect.left + window.scrollX}px`
-      };
+
+  togglePopover(tipo: 'desktop' | 'mobile') {
+    if (tipo === 'desktop') {
+      this.mostrarPopoverDesktop = !this.mostrarPopoverDesktop;
+
+      if (this.mostrarPopoverDesktop && this.loginButton?.nativeElement?.getBoundingClientRect) {
+        const rect = this.loginButton.nativeElement.getBoundingClientRect();
+        this.popoverPosition = {
+          top: `${rect.bottom + window.scrollY + 10}px`,
+          left: `${rect.left + window.scrollX}px`
+        };
+      }
+
+      // Garante que o popover mobile esteja fechado
+      this.mostrarPopoverMobile = false;
+
+    } else if (tipo === 'mobile') {
+      this.mostrarPopoverMobile = !this.mostrarPopoverMobile;
+
+      if (this.mostrarPopoverMobile && this.loginButtonMobile?.nativeElement?.getBoundingClientRect) {
+        const rect = this.loginButtonMobile.nativeElement.getBoundingClientRect();
+        this.popoverPositionMobile = {
+          top: `${rect.bottom + window.scrollY + 10}px`,
+          left: `${rect.left + window.scrollX}px`
+        };
+      }
+
+      // Garante que o popover desktop esteja fechado
+      this.mostrarPopoverDesktop = false;
     }
   }
+
+  navegarComFechamento(caminho: string) {
+    const offcanvasEl = this.offcanvasMenu.nativeElement;
+    const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl) || new bootstrap.Offcanvas(offcanvasEl);
+
+    offcanvas.hide();
+
+    // Aguarda a navegação e limpeza do DOM
+    this.navigationSub = this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // Força a limpeza de backdrop e scroll
+        setTimeout(() => {
+          // Remove qualquer backdrop
+          document.querySelectorAll('.offcanvas-backdrop.show').forEach(el => el.remove());
+
+          // Libera o scroll do body
+          document.body.classList.remove('offcanvas-backdrop', 'modal-open');
+          document.body.style.overflow = 'auto';
+          document.body.style.paddingRight = '';
+
+          this.navigationSub.unsubscribe();
+        }, 300);
+      }
+    });
+
+    // Inicia navegação
+    this.router.navigate([caminho]);
+  }
+
+
 
   IrParaCarrinho() {
     this.router.navigate(['/carrinho']);
@@ -73,7 +145,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-  this.authService.logout();
-}
-  
+    this.authService.logout();
+  }
+
 }

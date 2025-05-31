@@ -1,38 +1,25 @@
-<section class="container my-5">
-    <div class="row text-center text-md-start">
-      
-      <div class="col-md-3 d-flex align-items-start">
-        <img src="assets/icons/compra-segura.png" alt="Compra Segura" class="me-3" width="40">
-        <div>
-          <h6 class="fw-bold text-primary">Compra Segura</h6>
-          <p class="text-muted">Ambiente seguro para pagamentos online</p>
-        </div>
-      </div>
-  
-      <div class="col-md-3 d-flex align-items-start">
-        <img src="assets/icons/entrega.png" alt="Frete Grátis" class="me-3" width="50">
-        <div>
-          <h6 class="fw-bold text-primary">Frete Grátis</h6>
-          <p class="text-muted">Envio rápido e acompanhado com código de rastreio</p>
-        </div>
-      </div>
-  
-      <div class="col-md-3 d-flex align-items-start">
-        <img src="assets/icons/atendimento.png" alt="Suporte Profissional" class="me-3" width="40">
-        <div>
-          <h6 class="fw-bold text-primary">Suporte Profissional</h6>
-          <p class="text-muted">Equipe de suporte de extrema qualidade a semana toda</p>
-        </div>
-      </div>
-  
-      <div class="col-md-3 d-flex align-items-start">
-        <img src="assets/icons/reembolso.png" alt="Satisfação ou Reembolso" class="me-3" width="40">
-        <div>
-          <h6 class="fw-bold text-primary">Satisfação ou Reembolso</h6>
-          <p class="text-muted">Caso haja algo, devolvemos seu dinheiro com velocidade</p>
-        </div>
-      </div>
-  
+
+<!-- Carrossel de benefícios (Mobile) -->
+<!-- Mobile: Carrossel com scroll -->
+<section class="d-block d-md-none px-3 my-5">
+  <div class="scroll-container">
+    <div class="scroll-item" *ngFor="let item of beneficios">
+      <img [src]="item.imagem" alt="{{ item.titulo }}" width="50" class="mb-3" />
+      <h6 class="fw-bold text-success">{{ item.titulo }}</h6>
+      <p class="text-muted">{{ item.descricao }}</p>
     </div>
-  </section>
-  
+  </div>
+</section>
+
+<!-- Desktop: Grade tradicional -->
+<section class="container my-5 d-none d-md-block">
+  <div class="row text-center text-md-start">
+    <div class="col-md-3 d-flex align-items-start" *ngFor="let item of beneficios">
+      <img [src]="item.imagem" alt="{{ item.titulo }}" class="me-3" width="40" />
+      <div>
+        <h6 class="fw-bold text-primary">{{ item.titulo }}</h6>
+        <p class="text-muted">{{ item.descricao }}</p>
+      </div>
+    </div>
+  </div>
+</section>

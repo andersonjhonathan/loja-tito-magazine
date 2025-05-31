@@ -1,78 +1,81 @@
 <footer class="bg-dark text-white pt-5 pb-4">
-  <div class="container text-md-left">
-    <div class="row">
+  <div class="container">
+    <div class="row text-center text-md-start">
 
       <!-- Logo e Contato -->
-      <div class="col-md-3 mb-4">
-        <h3 class="fw-bold">
-          <img src="assets/tito_logo.png" class="d-block" style="width: 200px; height: auto; margin-right: 25px">
-        </h3>
-        <h6 class="fw-bold mt-3">ATENDIMENTO AO CLIENTE</h6>
-        <p><strong>E-mail:</strong> titomagazine&#64;gmail.com</p>
+      <div class="col-12 col-md-3 mb-4">
+        <img src="assets/tito_logo.png" class="img-fluid mb-3" style="max-width: 200px;">
+        <h6 class="fw-bold">ATENDIMENTO AO CLIENTE</h6>
+        <p class="mb-1"><strong>E-mail:</strong> titomagazine&#64;gmail.com</p>
         <p><strong>WhatsApp:</strong> +55 21 00000-0000</p>
       </div>
 
       <!-- Menu de Rodapé -->
-      <div class="col-md-3 mb-4">
+      <div class="col-12 col-md-3 mb-4">
         <h5 class="fw-bold">MENU DE RODAPÉ</h5>
         <ul class="list-unstyled">
-          <!-- <li><a href="#" class="text-white text-decoration-none">Sobre Nós</a></li> -->
-          <li><a href="#" class="text-white text-decoration-none">Entrar em contato</a></li>
-          <li><a href="#" class="text-white text-decoration-none">Perguntas Frequentes</a></li>
-          <li><a href="#" class="text-white text-decoration-none">Rastrear Pedido</a></li>
-          <li><a href="#" class="text-white text-decoration-none">Política de Privacidade</a></li>
-          <li><a href="#" class="text-white text-decoration-none">Termos de Uso e Condições</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">Entrar em contato</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">Perguntas Frequentes</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">Rastrear Pedido</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">Política de Privacidade</a></li>
+          <li><a href="#" class="text-white-50 text-decoration-none">Termos de Uso e Condições</a></li>
         </ul>
       </div>
 
       <!-- Menu Principal -->
-      <div class="col-md-3 mb-4">
+      <div class="col-12 col-md-3 mb-4">
         <h5 class="fw-bold">MENU PRINCIPAL</h5>
         <ul class="list-unstyled">
-          <li><a [routerLink]="['/produtos', 'Masculinas']" class="text-white text-decoration-none">Masculinas</a></li>
-          <li><a [routerLink]="['/produtos', 'Femininas']" class="text-white text-decoration-none">Femininas</a></li>
-          <li><a [routerLink]="['/produtos', 'Tênis']" class="text-white text-decoration-none">Tênis</a></li>
-          <li><a [routerLink]="['/produtos', 'NBA']" class="text-white text-decoration-none">NBA</a></li>
-          <li><a [routerLink]="['/produtos', 'Versões Torcedor']" class="text-white text-decoration-none">Versões
-              Torcedor</a></li>
-          <li><a [routerLink]="['/produtos', 'Versões Jogador']" class="text-white text-decoration-none">Versões
-              Jogador</a></li>
-          <li><a [routerLink]="['/produtos', 'Retrô']" class="text-white text-decoration-none">Retrôs</a></li>
-          <li><a [routerLink]="['/produtos', 'Kit Infantil']" class="text-white text-decoration-none">Kit Infantil</a>
+          <li><a [routerLink]="['/produtos', 'Masculinas']" class="text-white-50 text-decoration-none">Masculinas</a>
           </li>
+          <li><a [routerLink]="['/produtos', 'Femininas']" class="text-white-50 text-decoration-none">Femininas</a></li>
+          <li><a [routerLink]="['/produtos', 'Tênis']" class="text-white-50 text-decoration-none">Tênis</a></li>
+          <li><a [routerLink]="['/produtos', 'NBA']" class="text-white-50 text-decoration-none">NBA</a></li>
+          <li><a [routerLink]="['/produtos', 'Versões Torcedor']" class="text-white-50 text-decoration-none">Versões
+              Torcedor</a></li>
+          <li><a [routerLink]="['/produtos', 'Versões Jogador']" class="text-white-50 text-decoration-none">Versões
+              Jogador</a></li>
+          <li><a [routerLink]="['/produtos', 'Retrô']" class="text-white-50 text-decoration-none">Retrôs</a></li>
+          <li><a [routerLink]="['/produtos', 'Kit Infantil']" class="text-white-50 text-decoration-none">Kit
+              Infantil</a></li>
         </ul>
       </div>
 
-
-      <div class="col-md-3 mb-4">
+      <!-- Newsletter -->
+      <div class="col-12 col-md-3 mb-4">
         <h5 class="fw-bold">NOSSA NEWSLETTER</h5>
-        <p>Assine nossa newsletter e receba as melhores ofertas <strong>DE GRAÇA!</strong></p>
-        <div class="input-group">
-          <input type="email" class="form-control" placeholder="Seu e-mail">
-          <button class="btn btn-primary">Enviar</button>
-        </div>
+        <p class="text-white-50">Assine nossa newsletter e receba as melhores ofertas <strong class="text-white">DE
+            GRAÇA!</strong></p>
+
+        <!-- Container responsivo -->
+        <form class="newsletter-form">
+          <input type="email" class="form-control mb-2" placeholder="Seu e-mail" required>
+          <button type="submit" class="btn btn-primary w-100">Enviar</button>
+        </form>
       </div>
 
     </div>
 
-    <div class="text-center mt-4">
-      <p class="text-white-50">
+    <hr class="border-secondary my-4">
+
+    <!-- Aviso -->
+    <div class="text-center">
+      <p class="text-white-50 small">
         Preços e condições de pagamento exclusivos para compras neste site oficial, podendo variar com o tempo da
         oferta.
         <strong class="text-warning">Não nos responsabilizamos por quaisquer problemas.</strong>
       </p>
     </div>
 
-    <div class="row text-center mt-4">
-      <div class="col">
-        <span>Formas de pagamento:</span><br>
-        <img src="assets/formas-pagamento.png" alt="Formas de pagamento" class="img-fluid" width="270">
-      </div>
+    <!-- Pagamento -->
+    <div class="text-center my-3">
+      <span class="text-white-50">Formas de pagamento:</span><br>
+      <img src="assets/formas-pagamento.png" alt="Formas de pagamento" class="img-fluid" style="max-width: 270px;">
     </div>
 
+    <!-- Direitos -->
     <div class="text-center mt-3">
-      <p class="text-white-50">© TITO MAGAZINE | Desenvolvido por DA Tech 💜</p>
+      <p class="text-white-50 small">© TITO MAGAZINE | Desenvolvido por DA Tech 💜</p>
     </div>
-
   </div>
 </footer>
