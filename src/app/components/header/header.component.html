@@ -1,11 +1,58 @@
-<div class="bg-dark pb-5 pt-3">
-  <div class="container text-center pt-5">
+<div class="bg-dark pb-4 pt-3">
+
+  <nav class="navbar navbar-dark bg-dark px-3 py-2 d-md-none">
+    <div class="container-fluid justify-content-between align-items-center mb-3">
+
+      <button class="btn btn-link text-white p-0 me-2" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#menuLateral" aria-controls="menuLateral">
+        <i class="fas fa-bars fa-lg"></i>
+      </button>
+
+      <a href="/">
+        <img src="assets/tito_logo.png" class="d-block" style="width: 150px; height: auto">
+      </a>
+
+      <div class="d-flex align-items-center">
+        <button #loginBtnMobile class="btn" (click)="togglePopover('mobile')" style="white-space: nowrap;">
+          <i class="fas fa-user text-white"></i>
+        </button>
+        <app-login-popover *ngIf="mostrarPopoverMobile" [style.top]="popoverPositionMobile?.top"
+          [style.left]="popoverPositionMobile?.left" (fecharPopover)="togglePopover('mobile')" />
+
+        <!-- <i class="fas fa-map-marker-alt text-white"></i> -->
+        <div class="position-relative">
+          <button class="btn" (click)="IrParaCarrinho()">
+            <i class="fas fa-shopping-bag text-white"></i>
+            <span *ngIf="quantidadeCarrinho > 0"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+              {{ quantidadeCarrinho }}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de busca -->
+    <div class="px-2 mt-3 w-100">
+      <div class="input-group rounded-pill bg-white shadow-sm">
+        <input type="text" class="form-control border-0 rounded-start-pill" placeholder="O que está buscando?" />
+        <span class="input-group-text bg-white border-0 rounded-end-pill">
+          <i class="fas fa-search text-success"></i>
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- TOPO DESKTOP -->
+  <div class="container text-center pt-5 d-none d-md-block">
     <div class="d-flex justify-content-center align-items-center">
+
       <div>
         <a href="/">
-          <img src="assets/tito_logo.png" class="d-block" style="width: 200px; height: auto; margin-right: 25px">
+          <img src="assets/tito_logo.png" class="d-block" style="width: 200px; height: auto; margin-right: 25px;">
         </a>
       </div>
+
       <div class="input-group search-bar">
         <input type="text" class="form-control" placeholder="O que está buscando?">
         <span class="input-group-text">
@@ -14,15 +61,15 @@
       </div>
 
       <div class="position-relative d-inline-block">
-        <button #loginBtn class="btn btn-light ms-3 flex-shrink-0" (click)="togglePopover()"
-          style="white-space: nowrap;">
+        <button #loginBtn class="btn btn-light ms-3 flex-shrink-0" (click)="togglePopover('desktop')"
+          style="white-space: nowrap">
           {{ usuarioLogado?.name ? 'Olá, ' + usuarioLogado?.name + '!' : 'Login' }}
         </button>
-
-        <app-login-popover *ngIf="mostrarPopover" (fecharPopover)="togglePopover()" />
+        <app-login-popover *ngIf="mostrarPopoverDesktop" [style.top]="popoverPosition?.top"
+          [style.left]="popoverPosition?.left" (fecharPopover)="togglePopover('desktop')" />
       </div>
 
-      <button *ngIf="isAdmin" class="btn btn-danger ml-2 ms-3" (click)="navegarParaDashboard()">
+      <button *ngIf="isAdmin" class="btn btn-danger ms-3" (click)="navegarParaDashboard()">
         Dashboard
       </button>
 
@@ -48,6 +95,42 @@
       <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Retrô']">RETRÔS</button>
       <button class="btn btn-dark mx-2" [routerLink]="['/produtos', 'Kit Infantil']">KIT INFANTIL</button>
     </div>
+  </div>
+</div>
 
+<!-- OFFCANVAS MENU LATERAL -->
+<div #offcanvasMenu class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="menuLateral"
+  aria-labelledby="menuLateralLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="menuLateralLabel">Menu</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <div class="mb-3 text-center">
+      <img src="assets/tito_logo.png" style="width: 150px; height: auto;">
+    </div>
+
+
+    <button #loginBtnMobile class="btn btn-outline-dark w-100 mb-2" (click)="togglePopover('mobile')">
+      {{ usuarioLogado?.name ? 'Olá, ' + usuarioLogado?.name + '!' : 'Login' }}
+    </button>
+    <app-login-popover *ngIf="mostrarPopoverMobile" [style.top]="popoverPositionMobile?.top"
+      [style.left]="popoverPositionMobile?.left" (fecharPopover)="togglePopover('mobile')" />
+
+<button *ngIf="isAdmin" class="btn btn-danger w-100 mb-4" (click)="navegarComFechamento('/dashboard')">
+    <!-- <button *ngIf="isAdmin" class="btn btn-danger w-100 mb-4" (click)="navegarParaDashboard()"> -->
+      Dashboard
+    </button>
+
+    <!-- CATEGORIAS -->
+    <button class="btn w-100 mb-2 text-start" (click)="navegarComFechamento('/produtos/Masculinas')">Masculinas</button>
+    <button class="btn w-100 mb-2 text-start" (click)="navegarComFechamento('/produtos/Femininas')">Femininas</button>
+    <button class="btn w-100 mb-2 text-start" (click)="navegarComFechamento('/produtos/Tênis')">Tênis</button>
+    <button class="btn w-100 mb-2 text-start" (click)="navegarComFechamento('/produtos/NBA')">NBA</button>
+    <button class="btn w-100 mb-2 text-start" (click)="navegarComFechamento('/produtos/Versões Torcedor')">Versões Torcedor</button>
+    <button class="btn w-100 mb-2 text-start" (click)="navegarComFechamento('/produtos/Versões Jogador')">Versões Jogador</button>
+    <button class="btn w-100 mb-2 text-start" (click)="navegarComFechamento('/produtos/Retrô')">Retrôs</button>
+    <button class="btn w-100 mb-2 text-start" (click)="navegarComFechamento('/produtos/Kit Infantil')">Kit Infantil</button>
   </div>
 </div>

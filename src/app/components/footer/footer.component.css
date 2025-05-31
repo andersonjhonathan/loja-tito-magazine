@@ -1,0 +1,14 @@
+@media (max-width: 768px) {
+  footer .input-group {
+    flex-direction: column;
+  }
+
+  footer .input-group input {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.newsletter-form input,
+.newsletter-form button {
+  width: 100%;
+}

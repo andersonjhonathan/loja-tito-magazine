@@ -1,9 +1,11 @@
-<div class="container ps-4 pe-4" style="width: 1300px; max-width: 100%;">
-    <app-carrosel></app-carrosel>
-    <app-feed-masculino></app-feed-masculino>
-    <app-feed-feminino></app-feed-feminino>
-    <app-sobre-nos></app-sobre-nos>
-    <app-benefits></app-benefits>
-    <!-- <p>home works!</p> -->
+<div 
+  class="container ps-4 pe-4" 
+  [ngStyle]="{'width': isMobile ? '100%' : '1300px', 'max-width': '100%'}"
+  style="background-color: #f7f7f7"
+>
+  <app-carrosel *ngIf="!isMobile"></app-carrosel>
+  <app-feed-masculino></app-feed-masculino>
+  <app-feed-feminino></app-feed-feminino>
+  <app-sobre-nos></app-sobre-nos>
+  <app-benefits></app-benefits>
 </div>
-

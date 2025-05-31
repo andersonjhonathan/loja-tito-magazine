@@ -50,6 +50,11 @@ export class LoginPopoverComponent {
     }
   }
 
+  fecharPopoverOver() {
+  this.popoverAberto = false;
+  this.fecharPopover.emit();
+}
+
   ngOnInit(): void {
     this.authService.usuario$.subscribe((usuario) => {
       this.usuarioLogado = usuario;
@@ -79,25 +84,6 @@ export class LoginPopoverComponent {
     this.erro = 'E-mail ou senha inválidos.';
   }
 }
-
-// async cadastrar() {
-//   if (this.senha !== this.confirmarSenha) {
-//     this.erro = 'As senhas não coincidem.';
-//     return;
-//   }
-
-
-
-//   const erro = await this.authService.cadastrar(this.nome, this.email, this.senha);
-
-//   if (erro) {
-//     this.erro = erro;
-//   } else {
-//     this.erro = '';
-//     alert('Conta criada com sucesso! Você já pode fazer login.');
-//     this.toggleCadastro();
-//   }
-// }
 
 async cadastrar() {
   if (this.senha !== this.confirmarSenha) {
