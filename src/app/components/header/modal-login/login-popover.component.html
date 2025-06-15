@@ -18,7 +18,7 @@
 
       <!-- Inputs Condicionais -->
       <input *ngIf="!isCadastro && !isRecuperarSenha" type="email" class="form-control mb-2" placeholder="E-mail" [(ngModel)]="email" />
-      <input *ngIf="!isCadastro && !isRecuperarSenha" type="password" class="form-control mb-2" placeholder="Senha" [(ngModel)]="senha" />
+      <input *ngIf="!isCadastro && !isRecuperarSenha" type="password" class="form-control mb-2" placeholder="Senha" [(ngModel)]="senha" (keyup.enter)="login()" />
 
       <!-- Inputs para Cadastro -->
       <input *ngIf="isCadastro" type="text" class="form-control mb-2" placeholder="Nome completo" [(ngModel)]="nome" />

@@ -97,7 +97,7 @@
                 <td>{{ produto.preco_atual | currency:'BRL' }}</td>
                 <td>
                   <button class="btn btn-sm btn-info me-1" (click)="alterarProduto(produto)">Alterar</button>
-                  <button class="btn btn-sm btn-danger" (click)="removerProduto(2)">Remover</button>
+                  <button class="btn btn-sm btn-danger" (click)="removerProduto(produto.id)">Remover</button>
                 </td>
               </tr>
             </tbody>
@@ -235,7 +235,7 @@
               <td>{{ produto.preco_atual | currency:'BRL' }}</td>
               <td>
                 <button class="btn btn-sm btn-info me-1" (click)="alterarProduto(produto)">✏️</button>
-                <button class="btn btn-sm btn-danger" (click)="removerProduto(2)">🗑️</button>
+                <button class="btn btn-sm btn-danger" (click)="removerProduto(produto.id)">🗑️</button>
               </td>
             </tr>
           </tbody>

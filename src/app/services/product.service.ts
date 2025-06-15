@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 import { from, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators'; 
+import { map } from 'rxjs/operators';
 
 export interface Product {
   id: string;
@@ -45,38 +45,68 @@ export class ProductService {
   }
 
   getProductById(id: string): Observable<Product> {
-  return from(
-    this.supabase
-      .from('products')
-      .select('id, name, size, image_url, image_urls, preco_original, preco_atual, desconto, category, description')
-      .eq('id', id)
-      .single()  // Retorna um único produto
-  ).pipe(
-    map((result: any) => {
-      if (result.error) {
-        throw result.error;
-      }
+    return from(
+      this.supabase
+        .from('products')
+        .select('id, name, size, image_url, image_urls, preco_original, preco_atual, desconto, category, description')
+        .eq('id', id)
+        .single()  // Retorna um único produto
+    ).pipe(
+      map((result: any) => {
+        if (result.error) {
+          throw result.error;
+        }
 
-      const produto = result.data;
+        const produto = result.data;
 
-      // Verificando se 'size' é um array e, caso contrário, transformando-o
-      if (Array.isArray(produto.size)) {
-        produto.tamanhos = produto.size; 
-      } else if (typeof produto.size === 'string') {
-        produto.tamanhos = produto.size.split(','); 
-      } else {
-        produto.tamanhos = []; 
-      }
+        // Verificando se 'size' é um array e, caso contrário, transformando-o
+        if (Array.isArray(produto.size)) {
+          produto.tamanhos = produto.size;
+        } else if (typeof produto.size === 'string') {
+          produto.tamanhos = produto.size.split(',');
+        } else {
+          produto.tamanhos = [];
+        }
 
-      delete produto.size; 
+        delete produto.size;
 
-      return produto as Product;
-    })
-  );
-}
+        return produto as Product;
+      })
+    );
+  }
 
+  updateProduct(id: string, data: Partial<Product>): Observable<Product> {
+    return from(
+      this.supabase
+        .from('products')
+        .update(data)
+        .eq('id', id)
+        .select() // retorna o registro atualizado
+        .single()
+    ).pipe(
+      map((result: any) => {
+        if (result.error) {
+          throw result.error;
+        }
+        return result.data as Product;
+      })
+    );
+  }
 
-
-
-
+  deleteProduct(id: string): Observable<void> {
+    return from(
+      this.supabase
+        .from('products')
+        .delete()
+        .eq('id', id)
+    ).pipe(
+      map((result: any) => {
+        if (result.error) {
+          throw result.error;
+        }
+        // Não retorna dados, só confirma sucesso
+        return;
+      })
+    );
+  }
 }
