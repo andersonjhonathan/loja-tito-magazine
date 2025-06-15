@@ -5,13 +5,14 @@ import { LoginPopoverComponent } from './modal-login/login-popover.component';
 import { AuthService, Usuario } from './modal-login/auth.service';
 import { Subscription } from 'rxjs';
 import { CartService } from '../../services/cart.service';
+import { FormsModule } from '@angular/forms';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, LoginPopoverComponent],
+  imports: [CommonModule, RouterModule, LoginPopoverComponent, FormsModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
@@ -27,6 +28,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   quantidadeCarrinho: number = 0;
   usuarioLogado: Usuario | null = null;
   private navigationSub!: Subscription;
+  searchTerm: string = '';
 
   constructor(private authService: AuthService, private router: Router, private cartService: CartService) { }
   private authSubscription: Subscription | null = null;
@@ -107,34 +109,44 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   navegarComFechamento(caminho: string) {
-    const offcanvasEl = this.offcanvasMenu.nativeElement;
-    const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl) || new bootstrap.Offcanvas(offcanvasEl);
+  const offcanvasEl = this.offcanvasMenu.nativeElement;
+  const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl) || new bootstrap.Offcanvas(offcanvasEl);
 
-    offcanvas.hide();
+  // Fecha o offcanvas
+  offcanvas.hide();
 
-    // Aguarda a navegação e limpeza do DOM
-    this.navigationSub = this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        // Força a limpeza de backdrop e scroll
-        setTimeout(() => {
-          // Remove qualquer backdrop
-          document.querySelectorAll('.offcanvas-backdrop.show').forEach(el => el.remove());
+  // Inicia a navegação
+  this.router.navigate([caminho]);
 
-          // Libera o scroll do body
-          document.body.classList.remove('offcanvas-backdrop', 'modal-open');
-          document.body.style.overflow = 'auto';
-          document.body.style.paddingRight = '';
+  // Aguarda a navegação terminar
+  this.navigationSub = this.router.events.subscribe(event => {
+    if (event instanceof NavigationEnd) {
+      setTimeout(() => {
+        // Remove qualquer backdrop que tenha sobrado
+        document.querySelectorAll('.offcanvas-backdrop.show').forEach(el => el.remove());
 
-          this.navigationSub.unsubscribe();
-        }, 300);
-      }
-    });
+        // Corrige estilo do body
+        document.body.classList.remove('modal-open');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
 
-    // Inicia navegação
-    this.router.navigate([caminho]);
+        // Garante que o Offcanvas esteja limpo
+        offcanvas.dispose();
+
+        this.navigationSub.unsubscribe();
+      }, 300); // tempo ideal para animação acabar
+    }
+  });
+}
+
+
+  search() {
+    if (this.searchTerm.trim()) {
+      this.router.navigate(['/produtos'], {
+        queryParams: { search: this.searchTerm.trim() },
+      });
+    }
   }
-
-
 
   IrParaCarrinho() {
     this.router.navigate(['/carrinho']);

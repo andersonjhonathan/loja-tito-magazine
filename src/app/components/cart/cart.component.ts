@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { BenefitsComponent } from "../benefits/benefits.component";
 import { AuthService } from '../header/modal-login/auth.service';
 import { ToastService } from '../../services/toast.service';
+import { DeviceService } from '../../services/device.service';
 
 @Component({
   standalone: true,
@@ -18,12 +19,14 @@ export class CartComponent implements OnInit {
   items: any[] = [];
   userId: string = '';
   isLoggedIn: boolean = false;
+  isMobile: boolean = false;
 
   constructor(
     private cartService: CartService,
     private router: Router,
     private authService: AuthService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private deviceService: DeviceService
   ) { }
 
   async ngOnInit() {
@@ -54,6 +57,11 @@ export class CartComponent implements OnInit {
     } else {
       this.isLoggedIn = false;
     }
+
+    this.isMobile = this.deviceService.isMobile();
+    this.deviceService.isMobile$.subscribe(value => {
+      this.isMobile = value;
+    });
   }
 
   async removerItem(itemId: string) {

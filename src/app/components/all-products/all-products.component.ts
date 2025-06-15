@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProductService, Product } from '../../services/product.service';
+import { DeviceService } from '../../services/device.service';
 
 @Component({
   selector: 'app-all-products',
@@ -22,22 +23,47 @@ export class AllProductsComponent implements OnInit {
   itensPorPagina = 8;
   ordenacaoSelecionada = 'maisVendidos';
   categoriaSelecionada: string = '';
+  isMobile: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private deviceService: DeviceService
   ) {}
 
   ngOnInit() {
-    this.productService.getProducts().subscribe((produtos: Product[]) => {
-      this.produtos = produtos;
-      this.route.params.subscribe(params => {
-        const categoria = params['categoria'];
+     this.productService.getProducts().subscribe((produtos: Product[]) => {
+    this.produtos = produtos;
+
+    this.route.params.subscribe((params) => {
+      const categoria = params['categoria'];
+
+      this.route.queryParams.subscribe((query) => {
+        const termo = query['search']?.toLowerCase() || '';
+
+        let produtosFiltrados = this.produtos;
+
         if (categoria) {
-          this.filtrarPorCategoria(categoria);
+          produtosFiltrados = produtosFiltrados.filter(produto =>
+            produto.category.toLowerCase() === categoria.toLowerCase()
+          );
         }
+
+        if (termo) {
+          produtosFiltrados = produtosFiltrados.filter(produto =>
+            produto.name.toLowerCase().includes(termo)
+          );
+        }
+
+        this.produtosFiltrados = produtosFiltrados;
+        this.ordenarProdutos();
       });
+    });
+  });
+    this.isMobile = this.deviceService.isMobile();
+    this.deviceService.isMobile$.subscribe(value => {
+      this.isMobile = value;
     });
   }
 

@@ -1,104 +1,187 @@
-<!-- Carrinho vazio -->
-<div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;"
-  *ngIf="items.length === 0 && isLoggedIn">
-  <i class="bi bi-cart2" style="font-size: 48px; margin-bottom: 16px;"></i>
-  <h4 class="mb-3">Seu carrinho está vazio</h4>
-  <button class="btn px-4 py-2 fw-bold text-white" style="background-color: #079cff; border-radius: 12px;"
-    (click)="todosOsProdutos()">
-    Veja nossos produtos
-  </button>
-</div>
+<ng-container *ngIf="!isMobile">
+  <!-- Carrinho vazio -->
+  <div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;"
+    *ngIf="items.length === 0 && isLoggedIn">
+    <i class="bi bi-cart2" style="font-size: 48px; margin-bottom: 16px;"></i>
+    <h4 class="mb-3">Seu carrinho está vazio</h4>
+    <button class="btn px-4 py-2 fw-bold text-white" style="background-color: #079cff; border-radius: 12px;"
+      (click)="todosOsProdutos()">
+      Veja nossos produtos
+    </button>
+  </div>
 
-<!-- Caso o usuário não esteja logado -->
-<div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;"
-  *ngIf="!isLoggedIn">
-  <i class="bi bi-person-circle" style="font-size: 48px; margin-bottom: 16px;"></i>
-  <h4 class="mb-3">Faça login para visualizar seu carrinho</h4>
-</div>
+  <!-- Caso o usuário não esteja logado -->
+  <div class="d-flex flex-column align-items-center justify-content-center text-center" style="height: 40vh;"
+    *ngIf="!isLoggedIn">
+    <i class="bi bi-person-circle" style="font-size: 48px; margin-bottom: 16px;"></i>
+    <h4 class="mb-3">Faça login para visualizar seu carrinho</h4>
+  </div>
 
-<!-- Carrinho com produtos -->
-<div class="container my-5" *ngIf="items.length > 0 && isLoggedIn">
-  <h4 class="mb-4">Meu carrinho</h4>
+  <!-- Carrinho com produtos -->
+  <div class="container my-5" *ngIf="items.length > 0 && isLoggedIn">
+    <h4 class="mb-4">Meu carrinho</h4>
 
-  <div class="row">
-    <!-- Lista de produtos -->
-    <div class="col-md-8">
-      <div class="bg-white p-4 rounded-4 shadow border">
-        <div class="row fw-bold border-bottom pb-2 mb-3">
-          <div class="col-7">Produto</div>
-          <div class="col-3 text-center">Quantidade</div>
-          <div class="col-2 text-end">Total</div>
-        </div>
-
-        <div *ngFor="let item of items; let i = index" class="row align-items-center mb-4">
-          <div class="col-7 d-flex align-items-center">
-            <img [src]="item.imagemPrincipal" alt="{{item.nome}}" width="80" class="me-3 rounded" />
-            <div>
-              <p class="mb-1">{{ item.nome }}</p>
-              <span class="text-success fw-semibold">R$ {{ item.preco_final | number:'1.2-2' }}</span>
-              <span class="text-muted text-decoration-line-through ms-2">R$ {{ item.precoOriginal | number:'1.2-2'
-                }}</span>
-            </div>
+    <div class="row">
+      <!-- Lista de produtos -->
+      <div class="col-md-8">
+        <div class="bg-white p-4 rounded-4 shadow border">
+          <div class="row fw-bold border-bottom pb-2 mb-3">
+            <div class="col-7">Produto</div>
+            <div class="col-3 text-center">Quantidade</div>
+            <div class="col-2 text-end">Total</div>
           </div>
 
-          <div class="col-3 text-center">
-            <div class="d-flex justify-content-center align-items-center">
-              <div class="btn-group shadow-sm" role="group">
-                <button class="btn btn-light border-end-0 rounded-start" (click)="decrementar(item)">-</button>
-                <span class="bg-light border-start-0 border-end-0 px-3 py-1 d-flex align-items-center">{{ item.quantity
+          <div *ngFor="let item of items; let i = index" class="row align-items-center mb-4">
+            <div class="col-7 d-flex align-items-center">
+              <img [src]="item.imagemPrincipal" alt="{{item.nome}}" width="80" class="me-3 rounded" />
+              <div>
+                <p class="mb-1">{{ item.nome }}</p>
+                <span class="text-success fw-semibold">R$ {{ item.preco_final | number:'1.2-2' }}</span>
+                <span class="text-muted text-decoration-line-through ms-2">R$ {{ item.precoOriginal | number:'1.2-2'
                   }}</span>
-                <button class="btn btn-light border-start-0 rounded-end" (click)="incrementar(item)">+</button>
               </div>
             </div>
-            <div>
-              <a href="#" class="text-danger small mt-1 d-inline-block"
-                (click)="removerItem(item.id); $event.preventDefault()">Remover</a>
+
+            <div class="col-3 text-center">
+              <div class="d-flex justify-content-center align-items-center">
+                <div class="btn-group shadow-sm" role="group">
+                  <button class="btn btn-light border-end-0 rounded-start" (click)="decrementar(item)">-</button>
+                  <span class="bg-light border-start-0 border-end-0 px-3 py-1 d-flex align-items-center">{{
+                    item.quantity
+                    }}</span>
+                  <button class="btn btn-light border-start-0 rounded-end" (click)="incrementar(item)">+</button>
+                </div>
+              </div>
+              <div>
+                <a href="#" class="text-danger small mt-1 d-inline-block"
+                  (click)="removerItem(item.id); $event.preventDefault()">Remover</a>
+              </div>
+            </div>
+
+            <div class="col-2 text-end fw-semibold" style="margin-top: -25px;">
+              R$ {{ (item.preco_final * item.quantity) | number:'1.2-2' }}
             </div>
           </div>
+        </div>
+      </div>
 
-          <div class="col-2 text-end fw-semibold" style="margin-top: -25px;">
-            R$ {{ (item.preco_final * item.quantity) | number:'1.2-2' }}
+      <!-- Resumo do pedido -->
+      <div class="col-md-4">
+        <div class="bg-white p-4 rounded-4 shadow border">
+          <div class="d-flex justify-content-between mb-2">
+            <strong>Total</strong>
+            <strong>R$ {{ calcularTotal() | number:'1.2-2' }}</strong>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Resumo do pedido -->
-    <div class="col-md-4">
-      <div class="bg-white p-4 rounded-4 shadow border">
-        <div class="d-flex justify-content-between mb-2">
-          <strong>Total</strong>
-          <strong>R$ {{ calcularTotal() | number:'1.2-2' }}</strong>
-        </div>
+          <p class="text-success fw-semibold mb-1" style="color: #00D864 !important; font-family: sans-serif;">
+            Você economizou R$ {{ calcularEconomia() | number:'1.2-2' }}!
+          </p>
 
-        <p class="text-success fw-semibold mb-1" style="color: #00D864 !important; font-family: sans-serif;">
-          Você economizou R$ {{ calcularEconomia() | number:'1.2-2' }}!
-        </p>
+          <span class="badge bg-success rounded-4 mb-3"
+            style="background-color: #00D864 !important; font-family: sans-serif;">
+            PIX/CARTÃO RECEBA 3 DIAS ANTES
+          </span>
 
-        <span class="badge bg-success rounded-4 mb-3"
-          style="background-color: #00D864 !important; font-family: sans-serif;">
-          PIX/CARTÃO RECEBA 3 DIAS ANTES
-        </span>
+          <div class="form-group mb-3">
+            <label for="envio">Instruções de envio</label>
+            <select class="form-control" id="envio">
+              <option>Selecione...</option>
+              <option>Retirar na loja</option>
+              <option>Entrega expressa</option>
+            </select>
+          </div>
 
-        <div class="form-group mb-3">
-          <label for="envio">Instruções de envio</label>
-          <select class="form-control" id="envio">
-            <option>Selecione...</option>
-            <option>Retirar na loja</option>
-            <option>Entrega expressa</option>
-          </select>
+          <button class="btn botaoFinalizar w-100 fw-bold mb-3" (click)="finalizarCompra()">FINALIZAR COMPRA</button>
+          <button class="btn botaoTodosProdutos w-100 fw-bold" (click)="todosOsProdutos()">CONTINUAR COMPRANDO</button>
         </div>
 
-        <button class="btn botaoFinalizar w-100 fw-bold mb-3" (click)="finalizarCompra()">FINALIZAR COMPRA</button>
-        <button class="btn botaoTodosProdutos w-100 fw-bold" (click)="todosOsProdutos()">CONTINUAR COMPRANDO</button>
-      </div>
-
-      <div class="text-center mt-3 text-muted">
-        <i class="bi bi-lock-fill me-2"></i>Pagamento Seguro <br />
-        <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" width="60" />
+        <div class="text-center mt-3 text-muted">
+          <i class="bi bi-lock-fill me-2"></i>Pagamento Seguro <br />
+          <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" width="60" />
+        </div>
       </div>
     </div>
   </div>
-</div>
+</ng-container>
+
+<ng-container *ngIf="isMobile">
+  <!-- Carrinho vazio -->
+  <div class="text-center p-4" *ngIf="items.length === 0 && isLoggedIn">
+    <i class="bi bi-cart2" style="font-size: 40px;"></i>
+    <h5 class="my-3">Seu carrinho está vazio</h5>
+    <button class="btn btn-primary fw-bold w-100" (click)="todosOsProdutos()">Veja nossos produtos</button>
+  </div>
+
+  <!-- Usuário não logado -->
+  <div class="text-center p-4" *ngIf="!isLoggedIn">
+    <i class="bi bi-person-circle" style="font-size: 40px;"></i>
+    <h5 class="my-3">Faça login para visualizar seu carrinho</h5>
+  </div>
+
+  <!-- Carrinho com produtos -->
+  <div class="px-3 pb-5" *ngIf="items.length > 0 && isLoggedIn">
+    <h5 class="mt-3 mb-4">Meu carrinho</h5>
+
+    <!-- Lista de produtos -->
+    <div *ngFor="let item of items" class="mb-4 border-bottom pb-3">
+      <div class="d-flex">
+        <img [src]="item.imagemPrincipal" width="70" class="me-3" />
+        <div class="flex-grow-1">
+          <p class="mb-1 fw-semibold">{{ item.nome }}</p>
+          <small class="text-success">R$ {{ item.preco_final | number:'1.2-2' }}</small><br />
+          <small class="text-muted text-decoration-line-through">R$ {{ item.precoOriginal | number:'1.2-2' }}</small>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="btn-group shadow-sm">
+          <button class="btn btn-light border-end-0" (click)="decrementar(item)">-</button>
+          <span class="px-3 py-1 bg-light">{{ item.quantity }}</span>
+          <button class="btn btn-light border-start-0" (click)="incrementar(item)">+</button>
+        </div>
+        <strong>R$ {{ (item.preco_final * item.quantity) | number:'1.2-2' }}</strong>
+      </div>
+
+      <div class="text-end mt-1">
+        <a href="#" class="text-danger small" (click)="removerItem(item.id); $event.preventDefault()">Remover</a>
+      </div>
+    </div>
+
+    <!-- Resumo do Pedido -->
+    <div class="mt-4">
+      <div class="d-flex justify-content-between mb-2">
+        <strong>Total:</strong>
+        <strong>R$ {{ calcularTotal() | number:'1.2-2' }}</strong>
+      </div>
+
+      <p class="text-success fw-semibold small mb-1">
+        Você economizou R$ {{ calcularEconomia() | number:'1.2-2' }}!
+      </p>
+
+      <span class="badge bg-success rounded-pill mb-3 d-block text-center">
+        PIX/CARTÃO RECEBA 3 DIAS ANTES
+      </span>
+
+      <div class="mb-3">
+        <label for="envioMobile" class="form-label">Instruções de envio</label>
+        <select class="form-select" id="envioMobile">
+          <option>Selecione...</option>
+          <option>Retirar na loja</option>
+          <option>Entrega expressa</option>
+        </select>
+      </div>
+
+      <button class="btn btn-success w-100 mb-2 fw-bold" (click)="finalizarCompra()">FINALIZAR COMPRA</button>
+      <button class="btn btn-outline-primary w-100 fw-bold" (click)="todosOsProdutos()">CONTINUAR COMPRANDO</button>
+    </div>
+
+    <div class="text-center mt-4 text-muted small">
+      <i class="bi bi-lock-fill me-2"></i>Pagamento Seguro <br />
+      <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal" width="60" />
+    </div>
+  </div>
+</ng-container>
+
+
 
 <app-benefits></app-benefits>
