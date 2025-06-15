@@ -24,10 +24,13 @@ jobs:
         run: npm ci
 
       - name: Build project
-        run: npm run build -- --configuration production
+        run: npm run build -- --configuration production --base-href /loja-tito-magazine/
+
+      - name: Create 404.html for GitHub Pages SPA support
+        run: cp dist/loja-tito-magazine/index.html dist/loja-tito-magazine/404.html
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: dist/loja-camisas
+          folder: dist/loja-tito-magazine
