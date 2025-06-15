@@ -23,8 +23,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build project
-        run: npm run build -- --configuration production
+      - name: Build project with correct baseHref
+        run: ng build --configuration production --base-href /loja-tito-magazine/
 
       - name: Create 404.html for GitHub Pages SPA support
         run: cp dist/loja-camisas/index.html dist/loja-camisas/404.html
