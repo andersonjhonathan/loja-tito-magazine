@@ -24,7 +24,7 @@ jobs:
         run: npm ci
 
       - name: Build project
-        run: npm run build -- --configuration production --base-href /loja-camisas/
+        run: npm run build -- --configuration production
 
       - name: Create 404.html for GitHub Pages SPA support
         run: cp dist/loja-camisas/index.html dist/loja-camisas/404.html
