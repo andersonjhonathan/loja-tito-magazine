@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { supabase } from '../../../services/supabase.client';
 import { ToastService } from '../../../services/toast.service';
 import { CommonModule } from '@angular/common';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Product } from '../../../services/product.service';
 
 @Component({
   standalone: true,
@@ -12,6 +13,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './add-product.component.html',
 })
 export class AddProductComponent implements OnInit {
+
+  @Input() produto?: Product;
   productForm: FormGroup;
   selectedFiles: File[] = [];
   selectedCoverFile: File | null = null;
@@ -45,6 +48,10 @@ export class AddProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.produto) {
+      this.populateForm(this.produto);
+    }
+
     this.productForm.valueChanges.subscribe(() => {
       this.calcularPrecoAtual();
     });
@@ -130,6 +137,27 @@ export class AddProductComponent implements OnInit {
     }
   }
 
+  private populateForm(produto: Product) {
+    this.productForm.patchValue({
+      name: produto.name,
+      description: produto.description,
+      category: produto.category,
+      preco_original: produto.preco_original,
+      preco_atual: produto.preco_atual,
+      desconto: produto.desconto,
+      size: produto.size || []
+    });
+
+    // Também preencha os arrays de tamanhos selecionados
+    if (produto.category === 'Tênis') {
+      this.selectedShoeSizes = produto.size || [];
+    } else {
+      this.selectedSizes = produto.size || [];
+    }
+
+    this.categorySelected = produto.category || '';
+  }
+
   async onSubmit() {
   if (this.productForm.invalid || this.selectedFiles.length === 0 || !this.selectedCoverFile) {
     this.imageError = 'Preencha todos os campos obrigatórios e selecione pelo menos uma imagem de capa e uma imagem adicional.';
@@ -202,5 +230,8 @@ export class AddProductComponent implements OnInit {
 
   this.isSubmitting = false;
 }
+
+
+
 
 }

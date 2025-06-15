@@ -8,6 +8,8 @@ import { AddProductComponent } from '../modal-add-product/add-product.component'
 import { ProductService, Product } from '../../../services/product.service';
 import { DeviceService } from '../../../services/device.service';
 import { Venda } from './model/dashboard-vendas.response'
+import { ToastService } from '../../../services/toast.service';
+import { ConfirmDialogComponent } from './modal-remov-product/confirm-dialog.component';
 
 @Component({
   selector: 'app-dashboard-visao-geral',
@@ -20,7 +22,8 @@ export class DashboardVisaoGeralComponent implements OnInit {
   constructor(
     private modalService: NgbModal,
     private productService: ProductService,
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
+    private toastService: ToastService
   ) { }
 
   produtos: Product[] = [];
@@ -140,13 +143,61 @@ export class DashboardVisaoGeralComponent implements OnInit {
     return dadosAleatorios;
   }
 
-  alterarProduto(produto: any) {
-    console.log('Produto alterado', produto);
-  }
+  alterarProduto(produto: Product) {
+  const modalRef = this.modalService.open(AddProductComponent, { size: 'lg' });
+  modalRef.componentInstance.produto = { ...produto };
 
-  removerProduto(produtoId: number) {
-    console.log('Produto removido', produtoId);
-  }
+  modalRef.result.then((produtoAtualizado: Product) => {
+    if (produtoAtualizado) {
+      this.productService.updateProduct(produtoAtualizado.id, produtoAtualizado).subscribe({
+        next: (res) => {
+          console.log('Produto atualizado com sucesso', res);
+          const index = this.produtos.findIndex(p => p.id === produtoAtualizado.id);
+          if (index !== -1) {
+            this.produtos[index] = produtoAtualizado;
+            this.atualizarProdutosPorPagina();
+          }
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar produto', err);
+        }
+      });
+    }
+  }).catch(() => {
+
+  });
+}
+
+removerProduto(produtoId: string) {
+  const modalRef = this.modalService.open(ConfirmDialogComponent);
+  modalRef.componentInstance.message = 'Tem certeza que deseja remover este produto?';
+
+  modalRef.result.then(
+    (result) => {
+      if (result === true) {
+        this.productService.deleteProduct(produtoId).subscribe({
+          next: () => {
+            this.produtos = this.produtos.filter(p => p.id !== produtoId);
+            this.totalPaginas = Math.ceil(this.produtos.length / this.itensPorPagina);
+            if (this.paginaAtual > this.totalPaginas) {
+              this.paginaAtual = this.totalPaginas || 1;
+            }
+            this.atualizarProdutosPorPagina();
+
+            this.toastService.success('Produto removido com sucesso!');
+          },
+          error: (err) => {
+            console.error('Erro ao remover produto', err);
+            this.toastService.error('Erro ao remover produto!');
+          }
+        });
+      }
+    },
+    () => {
+
+    }
+  );
+}
 
   abrirAdicionarProduto() {
     this.modalService.open(AddProductComponent, { size: 'lg' });
