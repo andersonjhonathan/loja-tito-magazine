@@ -25,13 +25,3 @@
 .input-group {
   overflow: hidden;
 }
-
-.input-group .form-control {
-  border-top-left-radius: 50px;
-  border-bottom-left-radius: 50px;
-}
-
-.input-group .input-group-text {
-  border-top-right-radius: 50px;
-  border-bottom-right-radius: 50px;
-}

@@ -8,6 +8,7 @@ import { CheckoutComponent } from './components/checkout/checkout.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent, data: { renderMode: 'no-prerender' } },
+  { path: 'produtos', component: AllProductsComponent},
   { path: 'produto/:id', component: PageProductComponent, data: { renderMode: 'no-prerender' } },
   { path: 'produtos/:categoria', component: AllProductsComponent },
   { path: 'carrinho', component: CartComponent },

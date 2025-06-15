@@ -1,5 +1,5 @@
-<div class="d-flex">
-  <!-- Sidebar -->
+<div class="d-flex" *ngIf="!isMobile">
+  <!-- SIDEBAR WEB -->
   <div class="bg-dark text-white p-3 vh-100" style="width: 240px;">
     <h4 class="mb-4">Admin</h4>
     <button class="btn btn-outline-light w-100 mb-3" (click)="abrirAdicionarProduto()">➕ Adicionar Produto</button>
@@ -7,47 +7,23 @@
     <button class="btn btn-outline-light w-100 mb-3" (click)="listarVendidos()">📦 Produtos Vendidos</button>
   </div>
 
-  <!-- Conteúdo -->
+  <!-- CONTEÚDO WEB -->
   <div class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
     <h2 class="mb-4">Dashboard</h2>
 
-    <!-- Métricas -->
+    <!-- MÉTRICAS -->
     <div class="row mb-4">
-      <div class="col-md-3 mb-3">
-        <div class="card text-white bg-warning shadow h-100">
+      <div class="col-md-3 mb-3" *ngFor="let card of metricas">
+        <div class="card text-white shadow h-100" [ngClass]="card.bg">
           <div class="card-body">
-            <h5 class="card-title">3</h5>
-            <p class="card-text">Pedidos no Carrinho (7 dias)</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card text-white bg-primary shadow h-100">
-          <div class="card-body">
-            <h5 class="card-title">7</h5>
-            <p class="card-text">Pedidos Finalizados (7 dias)</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card text-white bg-success shadow h-100">
-          <div class="card-body">
-            <h5 class="card-title">R$ 16.852,00</h5>
-            <p class="card-text">Vendas no Mês</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card text-white bg-danger shadow h-100">
-          <div class="card-body">
-            <h5 class="card-title">6</h5>
-            <p class="card-text">Pedidos Não Sincronizados</p>
+            <h5 class="card-title">{{ card.valor }}</h5>
+            <p class="card-text">{{ card.titulo }}</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Gráfico -->
+    <!-- GRÁFICO -->
     <div class="card shadow p-3 mb-4">
       <h5 class="mb-3">Vendas por Mês</h5>
       <highcharts-chart [Highcharts]="Highcharts" [options]="chartOptions"
@@ -55,7 +31,7 @@
       </highcharts-chart>
     </div>
 
-    <!-- Tabela de Vendas -->
+    <!-- TABELA VENDAS -->
     <div class="card shadow mb-4">
       <div class="card-body">
         <h5 class="card-title">Vendas Realizadas</h5>
@@ -70,7 +46,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let venda of vendas">
+              <tr *ngFor="let venda of vendasPaginadas">
                 <td>{{ venda.id }}</td>
                 <td>{{ venda.cliente }}</td>
                 <td>{{ venda.total | currency:'BRL' }}</td>
@@ -79,55 +55,158 @@
             </tbody>
           </table>
         </div>
+
+        <nav aria-label="Navegação de páginas de vendas">
+      <ul class="pagination pagination-sm justify-content-center mb-0">
+        <li class="page-item" [class.disabled]="paginaAtualVendas === 1">
+          <button class="page-link" (click)="paginaAnteriorVendas()">Anterior</button>
+        </li>
+
+        <li class="page-item"
+            *ngFor="let pagina of [].constructor(totalPaginasVendas); let i = index"
+            [class.active]="paginaAtualVendas === i + 1">
+          <button class="page-link" (click)="irParaPaginaVendas(i + 1)">{{ i + 1 }}</button>
+        </li>
+
+        <li class="page-item" [class.disabled]="paginaAtualVendas === totalPaginasVendas">
+          <button class="page-link" (click)="proximaPaginaVendas()">Próxima</button>
+        </li>
+      </ul>
+    </nav>
       </div>
     </div>
 
-    <!-- Tabela de Produtos -->
- <div class="card shadow mb-4">
-  <div class="card-body">
-    <h5 class="card-title">Produtos</h5>
+    <!-- TABELA PRODUTOS -->
+    <div class="card shadow mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Produtos</h5>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Imagem</th>
+                <th>Nome</th>
+                <th>Preço</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let produto of produtosPorPagina">
+                <td><img [src]="produto.image_url" alt="{{ produto.name }}" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
+                <td>{{ produto.name | slice:0:20 }}</td>
+                <td>{{ produto.preco_atual | currency:'BRL' }}</td>
+                <td>
+                  <button class="btn btn-sm btn-info me-1" (click)="alterarProduto(produto)">Alterar</button>
+                  <button class="btn btn-sm btn-danger" (click)="removerProduto(2)">Remover</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAGINAÇÃO -->
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" [class.disabled]="paginaAtual === 1">
+              <button class="page-link" (click)="paginaAnterior()">Anterior</button>
+            </li>
+            <li class="page-item" *ngFor="let pagina of [].constructor(totalPaginas); let i = index" 
+                [class.active]="paginaAtual === (i + 1)">
+              <button class="page-link" (click)="irParaPagina(i + 1)">{{ i + 1 }}</button>
+            </li>
+            <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
+              <button class="page-link" (click)="proximaPagina()">Próxima</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE VERSION -->
+<div *ngIf="isMobile" class="p-3 bg-light">
+  <!-- MENU HAMBURGUER -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Dashboard</h4>
+    <button class="btn btn-outline-dark" data-bs-toggle="offcanvas" data-bs-target="#sidebarMobile">
+      ☰ Menu
+    </button>
+  </div>
+
+  <!-- SIDEBAR MOBILE OFFCANVAS -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMobile">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Admin</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <button class="btn btn-outline-dark w-100 mb-3" (click)="abrirAdicionarProduto()">➕ Adicionar Produto</button>
+      <button class="btn btn-outline-dark w-100 mb-3" (click)="excluirUsuario()">❌ Excluir Usuário</button>
+      <button class="btn btn-outline-dark w-100 mb-3" (click)="listarVendidos()">📦 Produtos Vendidos</button>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS SIMPLIFICADAS -->
+  <div class="row mb-3">
+    <div class="col-6 mb-3" *ngFor="let card of metricas">
+      <div class="card text-white text-center shadow h-100" [ngClass]="card.bg" style="font-size: 0.85rem;">
+        <div class="card-body p-2">
+          <h6 class="mb-1">{{ card.valor }}</h6>
+          <small>{{ card.titulo }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO -->
+  <div class="card shadow p-2 mb-3">
+    <h6 class="mb-2">Vendas por Mês</h6>
+    <highcharts-chart [Highcharts]="Highcharts" [options]="chartOptions"
+      style="width: 100%; height: 250px; display: block;">
+    </highcharts-chart>
+  </div>
+
+ <!-- TABELA VENDAS COM PAGINAÇÃO -->
+<div class="card shadow mb-3">
+  <div class="card-body p-2">
+    <h6 class="card-title">Vendas Realizadas</h6>
     <div class="table-responsive">
-      <table class="table table-striped">
+      <table class="table table-sm table-hover">
         <thead>
           <tr>
-            <th>Imagem</th>
-            <th>Nome</th>
-            <th>Preço</th>
-            <th>Ações</th>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Data</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let produto of produtosPorPagina">
-            <td>
-              <img [src]="produto.image_url" alt="{{ produto.name }}" class="img-thumbnail" style="width: 50px; height: 50px;">
-            </td>
-            <td>{{ produto.name | slice:0:20 }}</td>
-            <td>{{ produto.preco_atual | currency:'BRL' }}</td>
-            <td>
-              <button class="btn btn-sm btn-info me-1" (click)="alterarProduto(produto)">Alterar</button>
-              <!-- Depois preciso organizar essa parte para remover um produto ou alterar -->
-              <button class="btn btn-sm btn-danger" (click)="removerProduto(2)">Remover</button>
-            </td>
+          <tr *ngFor="let venda of vendasPaginadas">
+            <td>{{ venda.id }}</td>
+            <td>{{ venda.cliente }}</td>
+            <td>{{ venda.total | currency:'BRL' }}</td>
+            <td>{{ venda.data }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Paginação -->
-    <nav aria-label="Page navigation">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" [class.disabled]="paginaAtual === 1">
-          <button class="page-link" (click)="paginaAnterior()">Anterior</button>
+    <nav aria-label="Navegação de páginas de vendas">
+      <ul class="pagination pagination-sm justify-content-center mb-0">
+        <li class="page-item" [class.disabled]="paginaAtualVendas === 1">
+          <button class="page-link" (click)="paginaAnteriorVendas()">Anterior</button>
         </li>
 
-        <!-- Exibe os números das páginas -->
-        <li class="page-item" *ngFor="let pagina of [].constructor(totalPaginas); let i = index" 
-            [class.active]="paginaAtual === (i + 1)">
-          <button class="page-link" (click)="irParaPagina(i + 1)">{{ i + 1 }}</button>
+        <li class="page-item"
+            *ngFor="let pagina of [].constructor(totalPaginasVendas); let i = index"
+            [class.active]="paginaAtualVendas === i + 1">
+          <button class="page-link" (click)="irParaPaginaVendas(i + 1)">{{ i + 1 }}</button>
         </li>
 
-        <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
-          <button class="page-link" (click)="proximaPagina()">Próxima</button>
+        <li class="page-item" [class.disabled]="paginaAtualVendas === totalPaginasVendas">
+          <button class="page-link" (click)="proximaPaginaVendas()">Próxima</button>
         </li>
       </ul>
     </nav>
@@ -135,7 +214,49 @@
 </div>
 
 
+  <!-- TABELA PRODUTOS -->
+  <div class="card shadow mb-3">
+    <div class="card-body p-2">
+      <h6 class="card-title">Produtos</h6>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped">
+          <thead>
+            <tr>
+              <th>Img</th>
+              <th>Nome</th>
+              <th>Preço</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let produto of produtosPorPagina">
+              <td><img [src]="produto.image_url" class="img-fluid" style="width: 40px; height: 40px;"></td>
+              <td>{{ produto.name | slice:0:10 }}</td>
+              <td>{{ produto.preco_atual | currency:'BRL' }}</td>
+              <td>
+                <button class="btn btn-sm btn-info me-1" (click)="alterarProduto(produto)">✏️</button>
+                <button class="btn btn-sm btn-danger" (click)="removerProduto(2)">🗑️</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-
+      <!-- Paginação -->
+      <nav class="mt-2">
+        <ul class="pagination pagination-sm justify-content-center">
+          <li class="page-item" [class.disabled]="paginaAtual === 1">
+            <button class="page-link" (click)="paginaAnterior()">«</button>
+          </li>
+          <li class="page-item" *ngFor="let pagina of [].constructor(totalPaginas); let i = index" 
+              [class.active]="paginaAtual === (i + 1)">
+            <button class="page-link" (click)="irParaPagina(i + 1)">{{ i + 1 }}</button>
+          </li>
+          <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
+            <button class="page-link" (click)="proximaPagina()">»</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
   </div>
 </div>
