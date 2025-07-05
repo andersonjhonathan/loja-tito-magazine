@@ -24,16 +24,16 @@ export class AddProductComponent implements OnInit {
   categorias = ['Masculinas', 'Femininas', 'Tênis', 'NBA', 'Versões Torcedor', 'Versões Jogador', 'Retrô', 'Kit Infantil'];
 
   categorySelected: string = '';
-  
-  availableSizes = ['P', 'M', 'G', 'GG', 'XG', 'XXG']; 
+
+  availableSizes = ['P', 'M', 'G', 'GG', 'XG', 'XXG'];
   availableShoeSizes = ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
 
-  selectedSizes: string[] = []; 
+  selectedSizes: string[] = [];
   selectedShoeSizes: string[] = [];
 
   constructor(
     private fb: FormBuilder,
-     public modal: NgbActiveModal,
+    public modal: NgbActiveModal,
     private toastService: ToastService
   ) {
     this.productForm = this.fb.group({
@@ -71,10 +71,10 @@ export class AddProductComponent implements OnInit {
     }
   }
 
-   onCategoryChange(event: Event) {
+  onCategoryChange(event: Event) {
     const selectedCategory = (event.target as HTMLSelectElement).value;
     this.categorySelected = selectedCategory;
-    
+
     if (selectedCategory !== 'Tênis') {
       this.productForm.get('shoeSize')?.reset();
       this.selectedShoeSizes = [];
@@ -84,7 +84,7 @@ export class AddProductComponent implements OnInit {
     }
   }
 
-   onSizeChange(size: string, event: any) {
+  onSizeChange(size: string, event: any) {
     if (event.target.checked) {
       this.selectedSizes.push(size);
     } else {
@@ -159,7 +159,7 @@ export class AddProductComponent implements OnInit {
   }
 
   async onSubmit() {
-  if (this.productForm.invalid || this.selectedFiles.length === 0 || !this.selectedCoverFile) {
+  if (this.productForm.invalid || (!this.selectedFiles.length && !this.produto?.image_urls?.length) || (!this.selectedCoverFile && !this.produto?.image_url)) {
     this.imageError = 'Preencha todos os campos obrigatórios e selecione pelo menos uma imagem de capa e uma imagem adicional.';
     return;
   }
@@ -169,42 +169,47 @@ export class AddProductComponent implements OnInit {
   const imageUrls: string[] = [];
   let imageUrl: string = '';
 
-  const coverFilePath = `products/${Date.now()}-${this.selectedCoverFile?.name}`;
-  const { error: uploadCoverError } = await supabase.storage.from('images').upload(coverFilePath, this.selectedCoverFile);
+  if (this.selectedCoverFile) {
+    const coverFilePath = `products/${Date.now()}-${this.selectedCoverFile.name}`;
+    const { error: uploadCoverError } = await supabase.storage.from('images').upload(coverFilePath, this.selectedCoverFile);
 
-  if (uploadCoverError) {
-    console.error('Erro ao enviar imagem de capa:', uploadCoverError);
-    this.imageError = 'Erro ao enviar a imagem de capa.';
-    this.isSubmitting = false;
-    return;
-  }
-
-  const { data: coverData } = supabase.storage.from('images').getPublicUrl(coverFilePath);
-  imageUrl = coverData.publicUrl;
-
-  for (const file of this.selectedFiles) {
-    const filePath = `products/${Date.now()}-${file.name}`;
-
-    const { error: uploadError } = await supabase.storage.from('images').upload(filePath, file);
-
-    if (uploadError) {
-      console.error('Erro ao enviar imagem:', uploadError);
-      this.imageError = 'Erro ao enviar imagens.';
+    if (uploadCoverError) {
+      console.error('Erro ao enviar imagem de capa:', uploadCoverError);
+      this.imageError = 'Erro ao enviar a imagem de capa.';
       this.isSubmitting = false;
       return;
     }
 
-    const { data } = supabase.storage.from('images').getPublicUrl(filePath);
-    imageUrls.push(data.publicUrl);
-  }
-
-  let sizeData = [];
-
-  if (this.productForm.value.category === 'Tênis') {
-    sizeData = this.selectedShoeSizes;
+    const { data: coverData } = supabase.storage.from('images').getPublicUrl(coverFilePath);
+    imageUrl = coverData.publicUrl;
   } else {
-    sizeData = this.selectedSizes;
+    imageUrl = this.produto?.image_url || '';
   }
+
+  if (this.selectedFiles.length > 0) {
+    for (const file of this.selectedFiles) {
+      const filePath = `products/${Date.now()}-${file.name}`;
+
+      const { error: uploadError } = await supabase.storage.from('images').upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Erro ao enviar imagem:', uploadError);
+        this.imageError = 'Erro ao enviar imagens.';
+        this.isSubmitting = false;
+        return;
+      }
+
+      const { data } = supabase.storage.from('images').getPublicUrl(filePath);
+      imageUrls.push(data.publicUrl);
+    }
+  } else {
+    imageUrls.push(...(this.produto?.image_urls || []));
+  }
+
+  // Tamanhos
+  const sizeData = this.productForm.value.category === 'Tênis'
+    ? this.selectedShoeSizes
+    : this.selectedSizes;
 
   const productData = {
     name: this.productForm.value.name,
@@ -215,21 +220,32 @@ export class AddProductComponent implements OnInit {
     desconto: this.productForm.value.desconto,
     image_url: imageUrl,
     image_urls: imageUrls,
-    created_at: new Date().toISOString(),
-    size: sizeData 
+    size: sizeData
   };
 
-  const { error } = await supabase.from('products').insert([productData]);
+  let response;
 
-  if (error) {
-    console.error('Erro ao salvar produto:', error);
+  if (this.produto?.id) {
+    // EDITAR produto existente
+    const { error } = await supabase.from('products').update(productData).eq('id', this.produto.id);
+    response = { error };
+  } else {
+    // CRIAR novo produto
+    const { error } = await supabase.from('products').insert([{ ...productData, created_at: new Date().toISOString() }]);
+    response = { error };
+  }
+
+  if (response.error) {
+    console.error('Erro ao salvar produto:', response.error);
     this.toastService.error('Erro ao salvar produto.');
   } else {
-    this.toastService.success('Produto salvo com sucesso!');
+    this.toastService.success(this.produto?.id ? 'Produto atualizado com sucesso!' : 'Produto salvo com sucesso!');
+    this.modal.close({ ...productData, id: this.produto?.id }); // <- fecha modal retornando produto atualizado
   }
 
   this.isSubmitting = false;
 }
+
 
 
 
