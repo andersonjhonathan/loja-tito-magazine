@@ -110,12 +110,12 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingCard">
                             <button class="accordion-button shadow-sm rounded-3" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseCard" aria-expanded="true">
+                                data-bs-target="#collapseCard" aria-expanded="true" (click)="metodoPagamentoSelecionado = 'cartao'">
                                 Cartão de Crédito
                             </button>
                         </h2>
                         <div id="collapseCard" class="accordion-collapse collapse show">
-                            <div class="accordion-body">
+                            <div class="accordion-body" *ngIf="metodoPagamentoSelecionado === 'cartao'">
                                 <div class="mb-2">
                                     <input type="text" class="form-control rounded-3 shadow-sm"
                                         placeholder="Número do cartão" required name="numeroCartao"
@@ -172,7 +172,7 @@
                                     </label>
                                 </div>
                                 <button type="submit" class="btn btn-primary w-100 rounded-3 shadow-sm"
-                                    [disabled]="checkoutForm.invalid">
+                                    [disabled]="!isFormularioValido(checkoutForm)">
                                     🔒 Finalizar compra
                                 </button>
                             </div>
@@ -183,7 +183,8 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingPix">
                             <button class="accordion-button collapsed shadow-sm rounded-3" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#collapsePix" aria-expanded="false">
+                                data-bs-toggle="collapse" data-bs-target="#collapsePix" aria-expanded="false"
+                                (click)="metodoPagamentoSelecionado = 'pix'">
                                 PIX
                             </button>
                         </h2>
@@ -196,7 +197,7 @@
                                     <li>Prazo de até 30 minutos para compensar.</li>
                                 </ul>
                                 <button type="submit" class="btn btn-primary w-100 rounded-3 shadow-sm"
-                                    [disabled]="checkoutForm.invalid">
+                                    [disabled]="!isFormularioValido(checkoutForm)">
                                     🔒 Finalizar compra
                                 </button>
                             </div>
@@ -207,7 +208,8 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingBoleto">
                             <button class="accordion-button collapsed shadow-sm rounded-3" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#collapseBoleto" aria-expanded="false">
+                                data-bs-toggle="collapse" data-bs-target="#collapseBoleto" aria-expanded="false"
+                                (click)="metodoPagamentoSelecionado = 'boleto'">
                                 Boleto
                             </button>
                         </h2>
@@ -220,7 +222,7 @@
                                     <li>Prazo de até 3 dias úteis para compensar.</li>
                                 </ul>
                                 <button type="submit" class="btn btn-primary w-100 rounded-3 shadow-sm"
-                                    [disabled]="checkoutForm.invalid">
+                                    [disabled]="!isFormularioValido(checkoutForm)">
                                     🔒 Finalizar compra
                                 </button>
                             </div>

@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxImageZoomModule } from 'ngx-image-zoom';
@@ -10,15 +10,23 @@ import { ToastService } from '../../services/toast.service';
 import { DeviceService } from '../../services/device.service';
 import { BenefitsComponent } from '../benefits/benefits.component';
 
+
 @Component({
   selector: 'app-page-product',
   standalone: true,
-  imports: [CommonModule, NgxImageZoomModule, FormsModule, HttpClientModule, BenefitsComponent],
+  imports: [
+    CommonModule, 
+    NgxImageZoomModule, 
+    FormsModule, 
+    HttpClientModule, 
+    BenefitsComponent,
+  ],
   templateUrl: './page-product.component.html',
   styleUrl: './page-product.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class PageProductComponent {
+export class PageProductComponent{
+
   produto!: Product;
   tamanhoSelecionado: string | null = null;
   personalizar: boolean = false;
@@ -143,4 +151,5 @@ export class PageProductComponent {
   ComprarProduto() {
     this.adicionarAoCarrinho();
   }
+
 }

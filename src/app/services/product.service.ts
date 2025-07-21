@@ -16,6 +16,7 @@ export interface Product {
   description: string;
   size: string[];
   tamanhos?: string[];
+  code: string;
 }
 
 
@@ -48,7 +49,7 @@ export class ProductService {
     return from(
       this.supabase
         .from('products')
-        .select('id, name, size, image_url, image_urls, preco_original, preco_atual, desconto, category, description')
+        .select('id, name, size, image_url, image_urls, preco_original, preco_atual, desconto, category, description, code')
         .eq('id', id)
         .single()  // Retorna um único produto
     ).pipe(
@@ -109,4 +110,15 @@ export class ProductService {
       })
     );
   }
+
+  getAllSoldProducts(): Observable<any[]> {
+  return from(
+    this.supabase
+      .from('order_items_view')
+      .select('*')
+      .order('created_at', { ascending: false })
+  ).pipe(
+    map((res: any) => res.data ?? []) // 👈 garante array mesmo se for null
+  );
+}
 }

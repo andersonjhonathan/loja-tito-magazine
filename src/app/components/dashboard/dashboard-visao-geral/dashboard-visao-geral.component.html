@@ -3,8 +3,8 @@
   <div class="bg-dark text-white p-3 vh-100" style="width: 240px;">
     <h4 class="mb-4">Admin</h4>
     <button class="btn btn-outline-light w-100 mb-3" (click)="abrirAdicionarProduto()">➕ Adicionar Produto</button>
-    <button class="btn btn-outline-light w-100 mb-3" (click)="excluirUsuario()">❌ Excluir Usuário</button>
-    <button class="btn btn-outline-light w-100 mb-3" (click)="listarVendidos()">📦 Produtos Vendidos</button>
+    <!-- <button class="btn btn-outline-light w-100 mb-3" (click)="excluirUsuario()">❌ Excluir Usuário</button>
+    <button class="btn btn-outline-light w-100 mb-3" (click)="listarVendidos()">📦 Produtos Vendidos</button> -->
   </div>
 
   <!-- CONTEÚDO WEB -->
@@ -31,48 +31,56 @@
       </highcharts-chart>
     </div>
 
-    <!-- TABELA VENDAS -->
-    <div class="card shadow mb-4">
-      <div class="card-body">
-        <h5 class="card-title">Vendas Realizadas</h5>
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Total</th>
-                <th>Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let venda of vendasPaginadas">
-                <td>{{ venda.id }}</td>
-                <td>{{ venda.cliente }}</td>
-                <td>{{ venda.total | currency:'BRL' }}</td>
-                <td>{{ venda.data }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <div class="card shadow mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Resumo de Vendas por Cliente</h5>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle text-center">
+                <thead class="table">
+                  <tr>
+                    <th>Cliente</th>
+                    <th>CPF</th>
+                    <th>Total</th>
+                    <th>Quantidade</th>
+                    <th>Data</th>
+                    <th>Produtos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let venda of vendasAgrupadas">
+                    <td>{{ venda.name }}</td>
+                    <td>{{ venda.cpf }}</td>
+                    <td>{{ venda.total | currency:'BRL' }}</td>
+                    <td>{{ venda.quantidade_total }}</td>
+                    <td>{{ venda.data }}</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary" (click)="openModal(venda)">
+                        <i class="bi bi-eye"></i> Ver
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+
 
         <nav aria-label="Navegação de páginas de vendas">
-      <ul class="pagination pagination-sm justify-content-center mb-0">
-        <li class="page-item" [class.disabled]="paginaAtualVendas === 1">
-          <button class="page-link" (click)="paginaAnteriorVendas()">Anterior</button>
-        </li>
+          <ul class="pagination pagination-sm justify-content-center mb-0">
+            <li class="page-item" [class.disabled]="paginaAtualVendas === 1">
+              <button class="page-link" (click)="paginaAnteriorVendas()">Anterior</button>
+            </li>
 
-        <li class="page-item"
-            *ngFor="let pagina of [].constructor(totalPaginasVendas); let i = index"
-            [class.active]="paginaAtualVendas === i + 1">
-          <button class="page-link" (click)="irParaPaginaVendas(i + 1)">{{ i + 1 }}</button>
-        </li>
+            <li class="page-item" *ngFor="let pagina of [].constructor(totalPaginasVendas); let i = index"
+              [class.active]="paginaAtualVendas === i + 1">
+              <button class="page-link" (click)="irParaPaginaVendas(i + 1)">{{ i + 1 }}</button>
+            </li>
 
-        <li class="page-item" [class.disabled]="paginaAtualVendas === totalPaginasVendas">
-          <button class="page-link" (click)="proximaPaginaVendas()">Próxima</button>
-        </li>
-      </ul>
-    </nav>
+            <li class="page-item" [class.disabled]="paginaAtualVendas === totalPaginasVendas">
+              <button class="page-link" (click)="proximaPaginaVendas()">Próxima</button>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
 
@@ -92,7 +100,8 @@
             </thead>
             <tbody>
               <tr *ngFor="let produto of produtosPorPagina">
-                <td><img [src]="produto.image_url" alt="{{ produto.name }}" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
+                <td><img [src]="produto.image_url" alt="{{ produto.name }}" class="img-thumbnail"
+                    style="width: 50px; height: 50px;"></td>
                 <td>{{ produto.name | slice:0:20 }}</td>
                 <td>{{ produto.preco_atual | currency:'BRL' }}</td>
                 <td>
@@ -110,8 +119,8 @@
             <li class="page-item" [class.disabled]="paginaAtual === 1">
               <button class="page-link" (click)="paginaAnterior()">Anterior</button>
             </li>
-            <li class="page-item" *ngFor="let pagina of [].constructor(totalPaginas); let i = index" 
-                [class.active]="paginaAtual === (i + 1)">
+            <li class="page-item" *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+              [class.active]="paginaAtual === (i + 1)">
               <button class="page-link" (click)="irParaPagina(i + 1)">{{ i + 1 }}</button>
             </li>
             <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
@@ -142,8 +151,8 @@
     </div>
     <div class="offcanvas-body">
       <button class="btn btn-outline-dark w-100 mb-3" (click)="abrirAdicionarProduto()">➕ Adicionar Produto</button>
-      <button class="btn btn-outline-dark w-100 mb-3" (click)="excluirUsuario()">❌ Excluir Usuário</button>
-      <button class="btn btn-outline-dark w-100 mb-3" (click)="listarVendidos()">📦 Produtos Vendidos</button>
+      <!-- <button class="btn btn-outline-dark w-100 mb-3" (click)="excluirUsuario()">❌ Excluir Usuário</button>
+      <button class="btn btn-outline-dark w-100 mb-3" (click)="listarVendidos()">📦 Produtos Vendidos</button> -->
     </div>
   </div>
 
@@ -167,51 +176,53 @@
     </highcharts-chart>
   </div>
 
- <!-- TABELA VENDAS COM PAGINAÇÃO -->
-<div class="card shadow mb-3">
-  <div class="card-body p-2">
-    <h6 class="card-title">Vendas Realizadas</h6>
-    <div class="table-responsive">
-      <table class="table table-sm table-hover">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Total</th>
-            <th>Data</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let venda of vendasPaginadas">
-            <td>{{ venda.id }}</td>
-            <td>{{ venda.cliente }}</td>
-            <td>{{ venda.total | currency:'BRL' }}</td>
-            <td>{{ venda.data }}</td>
-          </tr>
-        </tbody>
-      </table>
+  <!-- TABELA VENDAS COM PAGINAÇÃO -->
+  <div class="card shadow mb-4">
+          <div class="card-body">
+            <h5 class="card-title">Resumo de Vendas por Cliente</h5>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle text-center">
+                <thead class="table">
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Total</th>
+                    <th>Qtd</th>
+                    <th>Produtos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let venda of vendasAgrupadas">
+                    <td>{{ venda.name }}</td>
+                    <td>{{ venda.total | currency:'BRL' }}</td>
+                    <td>{{ venda.quantidade_total }}</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i> Ver
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+        <nav aria-label="Navegação de páginas de vendas">
+          <ul class="pagination pagination-sm justify-content-center mb-0">
+            <li class="page-item" [class.disabled]="paginaAtualVendas === 1">
+              <button class="page-link" (click)="paginaAnteriorVendas()">Anterior</button>
+            </li>
+
+            <li class="page-item" *ngFor="let pagina of [].constructor(totalPaginasVendas); let i = index"
+              [class.active]="paginaAtualVendas === i + 1">
+              <button class="page-link" (click)="irParaPaginaVendas(i + 1)">{{ i + 1 }}</button>
+            </li>
+
+            <li class="page-item" [class.disabled]="paginaAtualVendas === totalPaginasVendas">
+              <button class="page-link" (click)="proximaPaginaVendas()">Próxima</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
-
-    <!-- Paginação -->
-    <nav aria-label="Navegação de páginas de vendas">
-      <ul class="pagination pagination-sm justify-content-center mb-0">
-        <li class="page-item" [class.disabled]="paginaAtualVendas === 1">
-          <button class="page-link" (click)="paginaAnteriorVendas()">Anterior</button>
-        </li>
-
-        <li class="page-item"
-            *ngFor="let pagina of [].constructor(totalPaginasVendas); let i = index"
-            [class.active]="paginaAtualVendas === i + 1">
-          <button class="page-link" (click)="irParaPaginaVendas(i + 1)">{{ i + 1 }}</button>
-        </li>
-
-        <li class="page-item" [class.disabled]="paginaAtualVendas === totalPaginasVendas">
-          <button class="page-link" (click)="proximaPaginaVendas()">Próxima</button>
-        </li>
-      </ul>
-    </nav>
-  </div>
-</div>
 
 
   <!-- TABELA PRODUTOS -->
@@ -248,8 +259,8 @@
           <li class="page-item" [class.disabled]="paginaAtual === 1">
             <button class="page-link" (click)="paginaAnterior()">«</button>
           </li>
-          <li class="page-item" *ngFor="let pagina of [].constructor(totalPaginas); let i = index" 
-              [class.active]="paginaAtual === (i + 1)">
+          <li class="page-item" *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+            [class.active]="paginaAtual === (i + 1)">
             <button class="page-link" (click)="irParaPagina(i + 1)">{{ i + 1 }}</button>
           </li>
           <li class="page-item" [class.disabled]="paginaAtual === totalPaginas">
@@ -257,6 +268,65 @@
           </li>
         </ul>
       </nav>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHES DA VENDA -->
+<div class="modal fade" id="saleDetailModal" tabindex="-1" aria-labelledby="modalLabel">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content" *ngIf="selectedSaleList?.length">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title" id="modalLabel">Detalhes da Venda</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Lista dos produtos -->
+        <div *ngFor="let item of selectedSaleList" class="row g-4 mb-4 border-bottom pb-3">
+          <div class="col-md-6">
+            <strong>Produto:</strong> {{ item.product_name }}<br>
+            <img [src]="item.product_image" width="120" class="img-thumbnail mt-2" alt="Imagem do Produto" />
+          </div>
+          <div class="col-md-6">
+            <p><strong>Quantidade:</strong> {{ item.quantity }}</p>
+            <p><strong>Tamanho:</strong> {{ item.size }}</p>
+            <p><strong>Valor Unitário:</strong> R$ {{ item.price | number:'1.2-2' }}</p>
+            <p><strong>Total:</strong> R$ {{ (item.price ?? 0) * (item.quantity ?? 0) | number:'1.2-2' }}</p>
+          </div>
+        </div>
+
+        <!-- Informações gerais do pedido (usando o primeiro item) -->
+        <div class="col-12">
+          <hr>
+          <p><strong>Status:</strong>
+            <span class="badge bg-{{ selectedSaleList[0].status === 'pago' ? 'success' : selectedSaleList[0].status === 'pendente' ? 'warning' : 'secondary' }}">
+              {{ selectedSaleList[0].status | titlecase }}
+            </span>
+          </p>
+          <p><strong>Pagamento:</strong> {{ selectedSaleList[0].payment_method | titlecase }}</p>
+          <p *ngIf="selectedSaleList[0].payment_proof_url">
+            <strong>Comprovante:</strong>
+            <a [href]="selectedSaleList[0].payment_proof_url" target="_blank" class="text-decoration-underline">Ver comprovante</a>
+          </p>
+        </div>
+
+        <div class="col-12">
+          <hr>
+          <p class="mb-1"><strong>Endereço de Entrega:</strong></p>
+          <p class="mb-0">
+            {{ selectedSaleList[0].street }}, {{ selectedSaleList[0].number }}
+            <span *ngIf="selectedSaleList[0].complement"> - {{ selectedSaleList[0].complement }}</span><br>
+            {{ selectedSaleList[0].neighborhood }} - {{ selectedSaleList[0].city }}/{{ selectedSaleList[0].state }}<br>
+            CEP: {{ selectedSaleList[0].cep }}
+          </p>
+        </div>
+
+      </div>
+      <div class="modal-footer d-flex justify-content-between">
+        <small class="text-muted">Pedido feito em {{ selectedSaleList[0].created_at | date:'dd/MM/yyyy HH:mm' }}</small>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
     </div>
   </div>
 </div>

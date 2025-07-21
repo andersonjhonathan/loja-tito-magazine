@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { AbstractControl, FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../header/modal-login/auth.service';
 import { Subscription } from 'rxjs';
+import { OrderService } from '../../services/order.service';
 
 
 @Component({
@@ -25,9 +26,11 @@ export class CheckoutComponent implements OnInit {
   cartItems: any[] = [];
   userId: string | null = null;
   cep = '';
+  isFinalizando: boolean = false;
   valorEntrega: number = 0.00;
   freteNormal = 15.00;
   private cartSubscription: Subscription | undefined;
+  metodoPagamentoSelecionado: 'cartao' | 'pix' | 'boleto' = 'cartao';
 
   endereco: {
     rua: string;
@@ -69,7 +72,8 @@ export class CheckoutComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private cartService: CartService,
-    private authService: AuthService
+    private authService: AuthService,
+    private orderService: OrderService
   ) { }
 
   ngOnInit() {
@@ -129,6 +133,35 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  isFormularioValido(form: any): boolean {
+    // Validação básica dos dados do cliente e endereço
+    const clienteValido = this.cliente.email && this.cliente.nome && this.cliente.celular && this.cliente.cpf;
+    const enderecoValido = this.cep && this.endereco.numero;
+
+    if (!clienteValido || !enderecoValido) {
+      return false;
+    }
+
+    if (this.metodoPagamentoSelecionado === 'cartao') {
+      // Para cartão, valida campos obrigatórios do cartão e o form geral
+      return form.valid &&
+        this.pagamento.numeroCartao.trim() !== '' &&
+        this.pagamento.nomeCartao.trim() !== '' &&
+        this.pagamento.validadeCartao.trim() !== '' &&
+        this.pagamento.cvvCartao.trim() !== '' &&
+        this.pagamento.parcelasCartao !== null;
+    } else {
+      // Para pix e boleto, não precisa dos dados do cartão, só valida o form principal menos os campos de cartão
+      return form.form.controls['email']?.valid &&
+        form.form.controls['nome']?.valid &&
+        form.form.controls['celular']?.valid &&
+        form.form.controls['cpf']?.valid &&
+        form.form.controls['cep']?.valid &&
+        form.form.controls['numero']?.valid;
+    }
+  }
+
+
   resetarEndereco() {
     this.endereco = {
       rua: '',
@@ -140,26 +173,85 @@ export class CheckoutComponent implements OnInit {
     };
   }
 
-  finalizarCompra(form: any) {
-    if (form.invalid) {
-      Object.values(form.controls).forEach((control: any) => {
-        control.markAsTouched();
+  async finalizarCompra(form: any) {
+    if (form.invalid || !this.isFormularioValido(form)) {
+      Object.values(form.controls).forEach(control => {
+        (control as AbstractControl).markAsTouched();
       });
       return;
     }
+    this.isFinalizando = true;
 
-    console.log('Dados do cliente:', this.cliente);
-    console.log('Endereço:', this.endereco);
-    console.log('Pagamento:', this.pagamento);
+    try {
+      // 1. Criar pedido sem endereço e itens
+      const orderPayload = {
+        user_id: this.userId!,
+        total: this.getTotal(),
+        status: 'pendente',
+        payment_method: this.metodoPagamentoSelecionado
+      };
+      const createdOrder = await this.orderService.createOrder(orderPayload);
+      const orderId = createdOrder.id;
 
-    alert('Compra finalizada com sucesso!');
+      // 2. Criar endereço com order_id
+      const addressPayload = {
+        order_id: orderId,
+        cep: this.cep,
+        street: this.endereco.rua,
+        number: this.endereco.numero,
+        complement: this.endereco.complemento,
+        neighborhood: this.endereco.bairro,
+        city: this.endereco.cidade,
+        state: this.endereco.estado
+      };
+      await this.orderService.createAddress(addressPayload);
 
-    form.resetForm();
-    this.resetarEndereco();
-    this.exibirEntrega = false;
-    this.cep = '';
-    this.mensagemErroCep = '';
+      // 3. Criar itens do pedido
+      const itemsPayload = this.cartItems.map(item => ({
+        order_id: orderId,
+        product_id: item.product_id || item.products?.id,  // ajuste conforme
+        size: item.size,
+        quantity: item.quantity,
+        price: item.preco_final
+      }));
+      await this.orderService.createOrderItems(itemsPayload);
+
+      const usuario = JSON.parse(localStorage.getItem('usuario_logado') || '{}');
+      const userId = usuario?.id;
+
+      await this.orderService.updateUserInfo(userId, this.cliente.cpf, this.cliente.celular);
+
+      const usuarioStr = localStorage.getItem('usuario_logado');
+      if (usuarioStr) {
+        const usuario = JSON.parse(usuarioStr);
+        await this.cartService.clearCart(usuario.id);
+        this.cartItems = []
+      }
+
+      alert('Compra finalizada com sucesso!');
+      form.resetForm();
+      this.resetarEndereco();
+      this.exibirEntrega = false;
+      this.cep = '';
+      this.mensagemErroCep = '';
+      this.pagamento = {
+        numeroCartao: '',
+        nomeCartao: '',
+        validadeCartao: '',
+        cvvCartao: '',
+        parcelasCartao: null,
+        salvarInfo: false
+      };
+
+    } catch (error) {
+      console.error('Erro ao finalizar compra:', error);
+      alert('Ocorreu um erro ao finalizar a compra. Tente novamente.');
+    } finally {
+      this.isFinalizando = false;
+    }
   }
+
+
 
   async loadCart() {
     if (!this.userId) return;
