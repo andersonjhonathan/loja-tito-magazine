@@ -3,40 +3,22 @@
 
     <!-- Galeria de Imagens -->
     <div class="col-md-6">
-      <!-- <div class="card shadow rounded-4 p-3">
-        <div class="text-center">
-          <div class="zoom-container mb-3">
-            <lib-ngx-image-zoom [thumbImage]="produto.image_url" [fullImage]="produto.image_url" [lensWidth]="150"
-              [lensHeight]="150">
-            </lib-ngx-image-zoom>
 
-          </div>
-          <div class="d-flex gap-2 justify-content-center flex-wrap">
-            <img *ngFor="let img of produto.image_url" [src]="img" class="img-thumbnail" width="60"
-              style="cursor: pointer;" (click)="produto.image_url= img">
-          </div>
-          <small class="text-muted mt-2 d-block">Passe o mouse sobre a foto para ampliar</small>
-        </div>
-      </div> -->
-      <div class="card shadow rounded-4 p-3 d-flex flex-row align-items-start gap-3">
-        <!-- Miniaturas ao lado esquerdo -->
-        <div class="d-flex flex-column gap-2 thumbnails">
-          <!-- eu preciso alterar para image_urls -->
-          <img *ngFor="let img of produto.image_urls" [src]="img" class="img-thumbnail thumb"
-            (click)="produto.image_url = img" />
-        </div>
+      <div class="card shadow d-block rounded-4 p-3">
+        <div class="rounded-4 p-3">
+          <div class="text-center">
+            <div class="image-wrapper mx-auto mb-2">
+              <img [src]="produto.image_url" class="img-fluid rounded"
+                style="max-height: 350px; object-fit: contain;" />
+            </div>
 
-        <!-- Imagem com Zoom -->
-        <div class="image-wrapper">
-          <lib-ngx-image-zoom [thumbImage]="produto.image_url" [fullImage]="produto.image_url" [lensWidth]="200"
-            [lensHeight]="200" [enableLens]="true" [enableScrollZoom]="false" [magnification]="2">
-          </lib-ngx-image-zoom>
-          <small class="text-muted d-block mt-2 text-center">Passe o mouse sobre a foto para ampliar</small>
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+              <img *ngFor="let img of produto.image_urls" [src]="img" class="img-thumbnail" width="60"
+                style="cursor: pointer;" (click)="produto.image_url = img" />
+            </div>
+          </div>
         </div>
       </div>
-
-
-
 
       <div class="card shadow rounded-4 p-4 mt-4">
         <h5 class="mb-3 text-center fw-bold">Descrição</h5>
@@ -52,9 +34,7 @@
           </p>
         </div>
       </div>
-
     </div>
-
 
 
     <!-- Informações do Produto -->
@@ -63,8 +43,7 @@
         <!-- <p class="text-muted mb-1">Novo | {{ produto.vendidos }} Vendidos</p> -->
         <p class="text-muted mb-1">Novo | 10 Vendidos</p>
         <h4>{{ produto.name }}</h4>
-        <!-- <p class="text-muted">Cód. Item {{ produto.codigo }}</p> -->
-        <p class="text-muted">Cód. Item TESTE-003</p>
+        <p class="text-muted">Cód. Item {{ produto.code }} </p>
         <p class="text-primary rounded"
           style="background-color: rgb(218, 250, 250); display: inline; margin-right: 170px; padding-left: 8px">
           Vendido e enviado pela <span class="fw-bold">Tito Magazine ⓒ</span>
@@ -379,5 +358,5 @@
       </div>
     </div>
   </div>
-<app-benefits></app-benefits>
+  <app-benefits></app-benefits>
 </div>

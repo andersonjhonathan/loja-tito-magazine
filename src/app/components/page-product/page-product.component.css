@@ -47,46 +47,51 @@
   margin-bottom: 4px;
 }
 
-.image-wrapper ::ng-deep .ngx-image-zoom-lens {
-  border-radius: 50% !important;
-  overflow: hidden;
-  border: 2px solid #ccc;
-}
-
-/* Limita o tamanho da imagem principal dentro do card */
+ /* Lente do zoom */
 .image-wrapper ::ng-deep .ngx-image-zoom-lens {
   border-radius: 50% !important;
   overflow: hidden !important;
   border: 2px solid #ccc;
-  width: 150px !important;
-  height: 150px !important;
+  width: 100px !important;
+  height: 100px !important;
 }
 
-.image-wrapper lib-ngx-image-zoom {
-  max-width: 100%;
-  max-height: 100%;
+/* 📦 Container da imagem principal */
+.image-wrapper {
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 10px;
+}
+
+::ng-deep lib-ngx-image-zoom img {
+  max-height: 350px;
   object-fit: contain;
+  width: auto;
+  display: block;
+  margin: 0 auto;
 }
 
-@media (max-width: 768px) {
-  .image-wrapper lib-ngx-image-zoom {
-    display: none;
-  }
-
-  .image-wrapper img {
-    display: block;
-    width: 100%;
-  }
+.thumbnails {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-/* Estiliza miniaturas */
 .thumb {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
-  cursor: pointer;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   border-radius: 6px;
+  cursor: pointer;
   transition: border 0.2s;
 }
 
@@ -94,11 +99,60 @@
   border: 2px solid #007bff;
 }
 
-/* Evita overflow lateral das miniaturas */
-.thumbnails {
-  max-height: 400px;
-  overflow-y: auto;
+@media (max-width: 768px) {
+  .card {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .thumbnails {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-height: none;
+  }
+
+  .image-wrapper {
+    max-width: 100%;
+  }
+
+  ::ng-deep .image-wrapper img {
+    max-height: 350px;
+    object-fit: contain;
+    width: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+
+
+
+
+.zoom-container {
+  position: relative;
+  overflow: hidden;
 }
 
+.zoom-image {
+  width: 100%;
+  max-height: 350px;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
+}
 
-  
+.zoom-lens {
+  position: absolute;
+  border: 2px solid rgba(0, 123, 255, 0.6);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: none;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 200%;
+  z-index: 10;
+}
+
+}
+

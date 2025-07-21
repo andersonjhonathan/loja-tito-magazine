@@ -7,9 +7,10 @@ import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddProductComponent } from '../modal-add-product/add-product.component';
 import { ProductService, Product } from '../../../services/product.service';
 import { DeviceService } from '../../../services/device.service';
-import { Venda } from './model/dashboard-vendas.response'
+import { Venda, Vendas } from './model/dashboard-vendas.response'
 import { ToastService } from '../../../services/toast.service';
 import { ConfirmDialogComponent } from './modal-remov-product/confirm-dialog.component';
+import { OrderService } from '../../../services/order.service';
 
 @Component({
   selector: 'app-dashboard-visao-geral',
@@ -23,7 +24,8 @@ export class DashboardVisaoGeralComponent implements OnInit {
     private modalService: NgbModal,
     private productService: ProductService,
     private deviceService: DeviceService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private orderService: OrderService
   ) { }
 
   produtos: Product[] = [];
@@ -33,7 +35,12 @@ export class DashboardVisaoGeralComponent implements OnInit {
   totalPaginas: number = 0;
   isMobile: boolean = false;
   vendasPaginadas: Venda[] = [];
-
+  selectedOrderDetails: any[] = [];
+  vendasAgrupadas: Venda[] = [];
+  produtosVendaSelecionada: any[] = [];
+  selectedSale: Venda | null = null;
+  salesList: Vendas[] = [];
+  selectedSaleList: Vendas[] = [];
   paginaAtualVendas: number = 1;
   itensPorPaginaVendas: number = 10;
   totalPaginasVendas: number = 0;
@@ -41,10 +48,16 @@ export class DashboardVisaoGeralComponent implements OnInit {
   ngOnInit(): void {
     this.carregarProdutos();
     this.calcularPaginacaoVendas();
+    this.carregarVendasAgrupadas();
+    this.atualizarMetricas()
     this.isMobile = this.deviceService.isMobile();
     this.deviceService.isMobile$.subscribe(value => {
       this.isMobile = value;
     });
+    this.productService.getAllSoldProducts().subscribe(data => {
+      this.salesList = data;
+    });
+   
   }
 
   carregarProdutos() {
@@ -69,31 +82,15 @@ export class DashboardVisaoGeralComponent implements OnInit {
     desconto: 0
   };
 
-  vendas: Venda[] = [
-  { id: 1, cliente: 'João Silva', total: 2500, data: '2025-04-10' },
-  { id: 2, cliente: 'Maria Oliveira', total: 3000, data: '2025-04-15' },
-  { id: 3, cliente: 'Carlos Souza', total: 1800, data: '2025-04-20' },
-  { id: 4, cliente: 'Ana Costa', total: 2750, data: '2025-04-22' },
-  { id: 5, cliente: 'Bruno Lima', total: 3200, data: '2025-04-25' },
-  { id: 6, cliente: 'Fernanda Dias', total: 2100, data: '2025-04-28' },
-  { id: 7, cliente: 'Ricardo Gomes', total: 1950, data: '2025-05-01' },
-  { id: 8, cliente: 'Patrícia Rocha', total: 3400, data: '2025-05-03' },
-  { id: 9, cliente: 'Lucas Martins', total: 2850, data: '2025-05-05' },
-  { id: 10, cliente: 'Juliana Alves', total: 2300, data: '2025-05-07' },
-  { id: 11, cliente: 'Rafael Teixeira', total: 2600, data: '2025-05-10' },
-  { id: 12, cliente: 'Camila Fernandes', total: 3100, data: '2025-05-12' },
-  { id: 13, cliente: 'Eduardo Nunes', total: 1700, data: '2025-05-14' },
-  { id: 14, cliente: 'Larissa Melo', total: 2900, data: '2025-05-16' },
-  { id: 15, cliente: 'Thiago Barbosa', total: 2050, data: '2025-05-18' }
-];
+ vendas: Venda[] = [];
 
 
   metricas = [
-    { valor: 3, titulo: 'Pedidos no Carrinho (7 dias)', bg: 'bg-warning' },
-    { valor: 7, titulo: 'Pedidos Finalizados (7 dias)', bg: 'bg-primary' },
-    { valor: 'R$ 16.852,00', titulo: 'Vendas no Mês', bg: 'bg-success' },
-    { valor: 6, titulo: 'Não Sincronizados', bg: 'bg-danger' },
-  ];
+  { valor: 0, titulo: 'Pedidos no Carrinho (7 dias)', bg: 'bg-warning' },
+  { valor: 0, titulo: 'Pedidos Finalizados (7 dias)', bg: 'bg-primary' },
+  { valor: 'R$ 0,00', titulo: 'Vendas no Mês', bg: 'bg-success' },
+  { valor: 0, titulo: 'Não Sincronizados', bg: 'bg-danger' },
+];
 
 
 
@@ -203,11 +200,12 @@ removerProduto(produtoId: string) {
     this.modalService.open(AddProductComponent, { size: 'lg' });
   }
 
-  excluirUsuario() {
-  }
+  // excluirUsuario() {
+  // }
 
-  listarVendidos() {
-  }
+  // listarVendidos() {
+  //   this.modalService.open(ProductsSoldComponent)
+  // }
 
   calcularPaginacaoVendas() {
   const inicio = (this.paginaAtualVendas - 1) * this.itensPorPaginaVendas;
@@ -232,7 +230,55 @@ proximaPaginaVendas() {
 
 irParaPaginaVendas(pagina: number) {
   this.paginaAtualVendas = pagina;
-  this.calcularPaginacaoVendas();
+  const inicio = (pagina - 1) * this.itensPorPaginaVendas;
+  const fim = inicio + this.itensPorPaginaVendas;
+  this.vendasPaginadas = this.vendasAgrupadas.slice(inicio, fim);
 }
+
+carregarVendasAgrupadas() {
+  this.orderService.buscarVendasAgrupadas().then(vendas => {
+    this.vendasAgrupadas = vendas;
+    this.totalPaginasVendas = Math.ceil(vendas.length / this.itensPorPaginaVendas);
+    this.irParaPaginaVendas(1); // exibir primeira página
+  });
+}
+
+openModal(sale: Venda): void {
+  // filtra todos os itens vendidos para o mesmo cpf (cliente)
+  this.selectedSaleList = this.salesList.filter(item => item.user_cpf === sale.cpf);
+
+  // guarda dados gerais da venda selecionada
+  this.selectedSale = sale;
+
+  // abrir modal bootstrap
+  const modal = document.getElementById('saleDetailModal');
+  if (modal) {
+    const bootstrapModal = new (window as any).bootstrap.Modal(modal);
+    bootstrapModal.show();
+  }
+}
+
+atualizarMetricas() {
+  // Pedidos no Carrinho: status 'pendente'
+  const pedidosNoCarrinho = this.salesList.filter(v => v.status === 'pendente');
+
+  // Pedidos Finalizados: status 'pago'
+  const pedidosFinalizados = this.salesList.filter(v => v.status === 'pago');
+
+  // Vendas no Mês: todos com status 'pago' (sem considerar data)
+  const vendas = this.salesList.filter(v => v.status === 'pago');
+
+  // Soma total das vendas
+  const totalVendas = vendas.reduce((acc, v) => acc + ((v.price ?? 0) * (v.quantity ?? 1)), 0);
+
+  // Atualiza as métricas
+  this.metricas = [
+    { valor: pedidosNoCarrinho.length, titulo: 'Pedidos no Carrinho', bg: 'bg-warning' },
+    { valor: pedidosFinalizados.length, titulo: 'Pedidos Finalizados', bg: 'bg-primary' },
+    { valor: `R$ ${totalVendas.toFixed(2).replace('.', ',')}`, titulo: 'Vendas Totais', bg: 'bg-success' },
+    { valor: 0, titulo: 'Não Sincronizados', bg: 'bg-danger' }, // ajuste se tiver a lógica
+  ];
+}
+
 
 }
