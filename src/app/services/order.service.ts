@@ -119,15 +119,19 @@ async getOrdersByUserId(userId: string) {
 }
 
 async createMPPreference(payload: {
-  user_id: string;
-  items: { title: string; quantity: number; unit_price: number }[];
+  order_id: string;
+  items: { title: string; quantity: number; unit_price: number; product_id: string; size: string }[];
+  back_urls: { success: string; pending: string; failure: string };
+  auto_return: string;
+  notification_url: string;
+  statement_descriptor: string;
 }): Promise<any> {
   try {
     const response = await fetch(`${environment.supabaseUrl}/functions/v1/mercado_pago`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${environment.supabaseKey}` // usar Service Role Key
+        'Authorization': `Bearer ${environment.supabaseKey}`
       },
       body: JSON.stringify(payload)
     });
@@ -139,12 +143,13 @@ async createMPPreference(payload: {
     }
 
     const data = await response.json();
-    return data; // retorna { order_id, init_point, total, etc. }
+    return data;
   } catch (error: any) {
     console.error('[OrderService] createMPPreference erro:', error.message);
     throw error;
   }
 }
+
 
 
 }

@@ -157,63 +157,183 @@ export class CheckoutComponent implements OnInit {
     };
   }
 
-  async finalizarCompra(form: any) {
-    if (form.invalid || !this.isFormularioValido(form)) {
-      Object.values(form.controls).forEach(control => {
-        (control as AbstractControl).markAsTouched();
-      });
-      return;
-    }
+// async finalizarCompra(form: any) {
+//   if (form.invalid || !this.isFormularioValido(form)) {
+//     Object.values(form.controls).forEach(control => (control as AbstractControl).markAsTouched());
+//     return;
+//   }
 
-    this.loadingPagamento = true;
-    this.isFinalizando = true;
+//   this.loadingPagamento = true;
+//   this.isFinalizando = true;
 
-    try {
-      // 1. Monta payload para criar o pedido via Edge Function
-      const orderPayload = {
-        user_id: this.userId!,
-        items: this.cartItems.map(item => ({
-          title: item.products?.name || 'Produto',
-          quantity: item.quantity,
-          unit_price: item.preco_final // obrigatório
-        }))
-      };
+//   try {
+//     // 1️⃣ Criar pedido
+//     const orderPayload = {
+//       user_id: this.userId!,
+//       total: this.getTotal(),
+//       status: 'pendente',
+//       payment_method: this.metodoPagamentoSelecionado
+//     };
+//     const createdOrder = await this.orderService.createOrder(orderPayload);
+//     const orderId = createdOrder.id;
 
-      const mpResponse = await this.orderService.createMPPreference({
-        user_id: this.userId!,
-        items: this.cartItems.map(item => ({
-          title: item.products?.name || 'Produto',
-          quantity: item.quantity,
-          unit_price: item.preco_final
-        }))
-      });
+//     // 2️⃣ Criar endereço
+//     const addressPayload = {
+//       order_id: orderId,
+//       cep: this.cep,
+//       street: this.endereco.rua,
+//       number: this.endereco.numero,
+//       complement: this.endereco.complemento,
+//       neighborhood: this.endereco.bairro,
+//       city: this.endereco.cidade,
+//       state: this.endereco.estado
+//     };
+//     await this.orderService.createAddress(addressPayload);
 
-      // 2. Salva endereço
-      await this.orderService.createAddress({
-        order_id: mpResponse.order_id,
-        cep: this.cep,
-        street: this.endereco.rua,
-        number: this.endereco.numero,
-        complement: this.endereco.complemento,
-        neighborhood: this.endereco.bairro,
-        city: this.endereco.cidade,
-        state: this.endereco.estado
-      });
+//     // 3 Criar ordem
+//     const itemsPayload = this.cartItems
+//   .filter(item => (item.product_id || item.products?.id) && item.quantity && item.preco_final)
+//   .map(item => ({
+//     order_id: orderId,
+//     product_id: item.product_id || item.products!.id,
+//     size: item.size || 'Único',
+//     quantity: item.quantity,
+//     price: item.preco_final
+//   }));
+// await this.orderService.createOrderItems(itemsPayload);
+// console.log('ItemsPayload final:', itemsPayload);
 
-      // 3. Redireciona para checkout
+//     // 4️⃣ Criar preferência Mercado Pago
+//     const mpItems = this.cartItems.map(item => ({
+//       title: item.products?.name || "Produto",
+//       quantity: item.quantity,
+//       unit_price: item.preco_final
+//     }));
+
+//     const mpPayload = {
+//       user_id: this.userId!,
+//       items: mpItems,
+//       back_urls: {
+//         success: "https://seusite.com/success",
+//         pending: "https://seusite.com/pending",
+//         failure: "https://seusite.com/failure"
+//       },
+//       auto_return: "approved",
+//       notification_url: "https://seusite.com/webhook/mercadopago",
+//       statement_descriptor: "Tito Magazine",
+//       external_reference: `order-${Date.now()}`
+//     };
+
+//     const mpResponse = await this.orderService.createMPPreference(mpPayload);
+
+//     if (mpResponse.init_point) {
+//       window.location.href = mpResponse.init_point;
+//     } else {
+//       alert("Erro ao gerar o checkout. Tente novamente.");
+//       this.loadingPagamento = false;
+//     }
+
+//     // ⚠️ Não limpar carrinho ou resetar formulário aqui
+//     // Isso será feito apenas após confirmação do pagamento via webhook
+
+//   } catch (error) {
+//     console.error("Erro ao finalizar compra:", error);
+//     alert("Ocorreu um erro ao finalizar a compra. Tente novamente.");
+//   } finally {
+//     this.isFinalizando = false;
+//   }
+// }
+
+async finalizarCompra(form: any) {
+  if (form.invalid || !this.isFormularioValido(form)) {
+    Object.values(form.controls).forEach(control => (control as AbstractControl).markAsTouched());
+    return;
+  }
+
+  this.loadingPagamento = true;
+  this.isFinalizando = true;
+
+  try {
+    // 1️⃣ Criar pedido
+    const orderPayload = {
+      user_id: this.userId!,
+      total: this.getTotal(),
+      status: 'pendente',
+      payment_method: this.metodoPagamentoSelecionado
+    };
+    const createdOrder = await this.orderService.createOrder(orderPayload);
+    const orderId = createdOrder.id;
+
+    // 2️⃣ Criar endereço
+    const addressPayload = {
+      order_id: orderId,
+      cep: this.cep,
+      street: this.endereco.rua,
+      number: this.endereco.numero,
+      complement: this.endereco.complemento,
+      neighborhood: this.endereco.bairro,
+      city: this.endereco.cidade,
+      state: this.endereco.estado
+    };
+    await this.orderService.createAddress(addressPayload);
+
+    // 3️⃣ Criar itens do pedido
+    const itemsPayload = this.cartItems
+      .filter(item => (item.product_id || item.products?.id) && item.quantity && item.preco_final)
+      .map(item => ({
+        order_id: orderId,
+        product_id: item.product_id || item.products!.id,
+        size: item.size || 'Único',
+        quantity: item.quantity,
+        price: item.preco_final
+      }));
+    await this.orderService.createOrderItems(itemsPayload);
+    console.log('ItemsPayload final:', itemsPayload);
+
+    // 4️⃣ Criar preferência Mercado Pago
+    const mpItems = this.cartItems.map(item => ({
+      title: item.products?.name || "Produto",
+      quantity: item.quantity,
+      unit_price: item.preco_final,
+      product_id: item.product_id || item.products!.id,
+      size: item.size || "Único"
+    }));
+
+    const mpPayload = {
+      order_id: orderId, // ✅ Aqui usamos order_id e não user_id
+      items: mpItems,
+      back_urls: {
+        success: "https://titomagazine.com.br/success",
+        pending: "https://titomagazine.com.br/pending",
+        failure: "https://titomagazine.com.br/failure"
+      },
+      auto_return: "approved",
+      notification_url: "https://fgauwbsvkeiogsloqnod.supabase.co/functions/v1/mercado_pago/webhook",
+      statement_descriptor: "Tito Magazine"
+    };
+
+    const mpResponse = await this.orderService.createMPPreference(mpPayload);
+
+    if (mpResponse.init_point) {
       window.location.href = mpResponse.init_point;
-
-      // **Não limpar carrinho nem resetar formulário aqui**
-      // Isso deve ser feito **apenas após o pagamento confirmado**, via webhook ou retorno do MP
-
-    } catch (error) {
-      console.error('Erro ao finalizar compra:', error);
-      alert('Ocorreu um erro ao finalizar a compra. Tente novamente.');
-    } finally {
-      this.isFinalizando = false;
+    } else {
+      alert("Erro ao gerar o checkout. Tente novamente.");
       this.loadingPagamento = false;
     }
+
+    // ⚠️ Não limpar carrinho ou resetar formulário aqui
+    // Isso será feito apenas após confirmação do pagamento via webhook
+
+  } catch (error) {
+    console.error("Erro ao finalizar compra:", error);
+    alert("Ocorreu um erro ao finalizar a compra. Tente novamente.");
+  } finally {
+    this.isFinalizando = false;
   }
+}
+
+
+
 
 
   async loadCart() {
