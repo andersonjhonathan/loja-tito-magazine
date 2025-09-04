@@ -1,0 +1,56 @@
+<div class="container mt-5 mb-5 meus-pedidos">
+    <h2 class="titulo-pagina">🛒 Meus Pedidos</h2>
+
+    <!-- Loading -->
+    <div class="text-center mt-5" *ngIf="loading">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Carregando seus pedidos...</p>
+    </div>
+
+    <!-- Nenhum pedido -->
+    <div *ngIf="!loading && pedidosAgrupados.length === 0" class="sem-pedidos text-center mt-5">
+        <i class="bi bi-box-seam icone-vazio"></i>
+        <p class="mensagem-vazia">Você ainda não fez nenhum pedido.</p>
+        <a routerLink="/" class="btn btn-primary">Voltar para a loja</a>
+    </div>
+
+    <!-- Lista de pedidos -->
+    <div *ngIf="!loading && pedidosAgrupados.length > 0" class="lista-pedidos">
+        <div *ngFor="let pedido of pedidosAgrupados" class="card pedido-card shadow-sm mb-4">
+            <div class="card-body">
+
+                <div class="pedido-header d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="pedido-id">Pedido #{{ pedido.id }}</h5>
+                    <div class="status-banner" [ngClass]="pedido.status">
+                        {{ pedido.status | uppercase }}
+                    </div>
+                </div>
+
+                <p><strong>Total: </strong> <span class="valor-total">R$ {{ pedido.total | number:'1.2-2' }}</span></p>
+                <!-- <p><strong>Pagamento:</strong> {{ pedido.payment_method }}</p> -->
+                <p><strong>Data:</strong> {{ pedido.created_at | date:'dd/MM/yyyy HH:mm' }}</p>
+
+                <div class="endereco mt-3">
+                    <h6 class="subtitulo">Endereço de Entrega</h6>
+                    <p>{{ pedido.address.street }}, {{ pedido.address.number }}<br>
+                        {{ pedido.address.city }}/{{ pedido.address.state }} - CEP: {{ pedido.address.cep }}</p>
+                </div>
+
+                <div class="itens mt-3">
+                    <h6 class="subtitulo">Itens do Pedido</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                            *ngFor="let item of pedido.items">
+                            <div>
+                                <strong>{{ item.product_name || item.product_id }}</strong>
+                                <small class="text-muted d-block">Tam: {{ item.size }} | Qtd: {{ item.quantity
+                                    }}</small>
+                            </div>
+                            <span class="preco-item">R$ {{ item.price | number:'1.2-2' }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

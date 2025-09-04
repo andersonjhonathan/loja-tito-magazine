@@ -79,6 +79,10 @@
         Dashboard
       </button>
 
+      <button *ngIf="isUser || isAdmin" class="btn btn-primary ms-3" (click)="navegarParaMeusPedidos()">
+        Pedidos
+      </button>
+
       <div class="position-relative d-inline-block text-center">
         <span *ngIf="quantidadeCarrinho > 0" class="position-absolute badge rounded-pill bg-danger text-white"
           style="top: -10px; right: -10px; z-index: 10;">
@@ -124,9 +128,13 @@
     <app-login-popover *ngIf="mostrarPopoverMobile" [style.top]="popoverPositionMobile?.top"
       [style.left]="popoverPositionMobile?.left" (fecharPopover)="togglePopover('mobile')" />
 
-    <button *ngIf="isAdmin" class="btn btn-danger w-100 mb-4" (click)="navegarComFechamento('/dashboard')">
+    <button *ngIf="isAdmin" class="btn btn-danger w-100 mb-2" (click)="navegarComFechamento('/dashboard')">
       <!-- <button *ngIf="isAdmin" class="btn btn-danger w-100 mb-4" (click)="navegarParaDashboard()"> -->
       Dashboard
+    </button>
+
+    <button *ngIf="isUser || isAdmin" class="btn btn-primary w-100 mb-4" (click)="navegarParaMeusPedidos()">
+        Meus Pedidos
     </button>
 
     <!-- CATEGORIAS -->

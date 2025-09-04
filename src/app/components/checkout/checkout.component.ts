@@ -31,6 +31,7 @@ export class CheckoutComponent implements OnInit {
   freteNormal = 15.00;
   private cartSubscription: Subscription | undefined;
   metodoPagamentoSelecionado: 'cartao' | 'pix' | 'boleto' = 'cartao';
+  loadingPagamento = false;
 
   endereco: {
     rua: string;
@@ -135,33 +136,15 @@ export class CheckoutComponent implements OnInit {
   }
 
   isFormularioValido(form: any): boolean {
-    // Validação básica dos dados do cliente e endereço
-    const clienteValido = this.cliente.email && this.cliente.nome && this.cliente.celular && this.cliente.cpf;
-    const enderecoValido = this.cep && this.endereco.numero;
+  if (!form) return false;
 
-    if (!clienteValido || !enderecoValido) {
-      return false;
-    }
-
-    if (this.metodoPagamentoSelecionado === 'cartao') {
-      // Para cartão, valida campos obrigatórios do cartão e o form geral
-      return form.valid &&
-        this.pagamento.numeroCartao.trim() !== '' &&
-        this.pagamento.nomeCartao.trim() !== '' &&
-        this.pagamento.validadeCartao.trim() !== '' &&
-        this.pagamento.cvvCartao.trim() !== '' &&
-        this.pagamento.parcelasCartao !== null;
-    } else {
-      // Para pix e boleto, não precisa dos dados do cartão, só valida o form principal menos os campos de cartão
-      return form.form.controls['email']?.valid &&
+        return form.form.controls['email']?.valid &&
         form.form.controls['nome']?.valid &&
         form.form.controls['celular']?.valid &&
         form.form.controls['cpf']?.valid &&
         form.form.controls['cep']?.valid &&
         form.form.controls['numero']?.valid;
-    }
-  }
-
+}
 
   resetarEndereco() {
     this.endereco = {
@@ -174,161 +157,94 @@ export class CheckoutComponent implements OnInit {
     };
   }
 
-  // async finalizarCompra(form: any) {
-  //   if (form.invalid || !this.isFormularioValido(form)) {
-  //     Object.values(form.controls).forEach(control => {
-  //       (control as AbstractControl).markAsTouched();
-  //     });
-  //     return;
-  //   }
-  //   this.isFinalizando = true;
-
-  //   try {
-  //     // 1. Criar pedido sem endereço e itens
-  //     const orderPayload = {
-  //       user_id: this.userId!,
-  //       total: this.getTotal(),
-  //       status: 'pendente',
-  //       payment_method: this.metodoPagamentoSelecionado
-  //     };
-  //     const createdOrder = await this.orderService.createOrder(orderPayload);
-  //     const orderId = createdOrder.id;
-
-  //     // 2. Criar endereço com order_id
-  //     const addressPayload = {
-  //       order_id: orderId,
-  //       cep: this.cep,
-  //       street: this.endereco.rua,
-  //       number: this.endereco.numero,
-  //       complement: this.endereco.complemento,
-  //       neighborhood: this.endereco.bairro,
-  //       city: this.endereco.cidade,
-  //       state: this.endereco.estado
-  //     };
-  //     await this.orderService.createAddress(addressPayload);
-
-  //     // 3. Criar itens do pedido
-  //     const itemsPayload = this.cartItems.map(item => ({
-  //       order_id: orderId,
-  //       product_id: item.product_id || item.products?.id,  // ajuste conforme
-  //       size: item.size,
-  //       quantity: item.quantity,
-  //       price: item.preco_final
-  //     }));
-  //     await this.orderService.createOrderItems(itemsPayload);
-
-  //     const usuario = JSON.parse(localStorage.getItem('usuario_logado') || '{}');
-  //     const userId = usuario?.id;
-
-  //     await this.orderService.updateUserInfo(userId, this.cliente.cpf, this.cliente.celular);
-
-  //     const usuarioStr = localStorage.getItem('usuario_logado');
-  //     if (usuarioStr) {
-  //       const usuario = JSON.parse(usuarioStr);
-  //       await this.cartService.clearCart(usuario.id);
-  //       this.cartItems = []
-  //     }
-
-  //     alert('Compra finalizada com sucesso!');
-  //     form.resetForm();
-  //     this.resetarEndereco();
-  //     this.exibirEntrega = false;
-  //     this.cep = '';
-  //     this.mensagemErroCep = '';
-  //     this.pagamento = {
-  //       numeroCartao: '',
-  //       nomeCartao: '',
-  //       validadeCartao: '',
-  //       cvvCartao: '',
-  //       parcelasCartao: null,
-  //       salvarInfo: false
-  //     };
-
-  //   } catch (error) {
-  //     console.error('Erro ao finalizar compra:', error);
-  //     alert('Ocorreu um erro ao finalizar a compra. Tente novamente.');
-  //   } finally {
-  //     this.isFinalizando = false;
-  //   }
-  // }
-
   async finalizarCompra(form: any) {
-  if (form.invalid || !this.isFormularioValido(form)) {
-    Object.values(form.controls).forEach(control => {
-      (control as AbstractControl).markAsTouched();
-    });
-    return;
-  }
+    if (form.invalid || !this.isFormularioValido(form)) {
+      Object.values(form.controls).forEach(control => {
+        (control as AbstractControl).markAsTouched();
+      });
+      return;
+    }
+    
+    this.loadingPagamento = true;
+    this.isFinalizando = true;
 
-  this.isFinalizando = true;
+    try {
+      // 1. Criar pedido, endereço e itens **com status "pendente"**
+      const orderPayload = {
+        user_id: this.userId!,
+        total: this.getTotal(),
+        status: 'pendente',
+        payment_method: this.metodoPagamentoSelecionado
+      };
+      const createdOrder = await this.orderService.createOrder(orderPayload);
+      const orderId = createdOrder.id;
 
-  try {
-    // 1. Criar pedido, endereço e itens **com status "pendente"**
-    const orderPayload = {
-      user_id: this.userId!,
-      total: this.getTotal(),
-      status: 'pendente',
-      payment_method: this.metodoPagamentoSelecionado
-    };
-    const createdOrder = await this.orderService.createOrder(orderPayload);
-    const orderId = createdOrder.id;
+      const addressPayload = {
+        order_id: orderId,
+        cep: this.cep,
+        street: this.endereco.rua,
+        number: this.endereco.numero,
+        complement: this.endereco.complemento,
+        neighborhood: this.endereco.bairro,
+        city: this.endereco.cidade,
+        state: this.endereco.estado
+      };
+      await this.orderService.createAddress(addressPayload);
 
-    const addressPayload = {
-      order_id: orderId,
-      cep: this.cep,
-      street: this.endereco.rua,
-      number: this.endereco.numero,
-      complement: this.endereco.complemento,
-      neighborhood: this.endereco.bairro,
-      city: this.endereco.cidade,
-      state: this.endereco.estado
-    };
-    await this.orderService.createAddress(addressPayload);
+      const itemsPayload = this.cartItems.map(item => ({
+        order_id: orderId,
+        product_id: item.product_id || item.products?.id,
+        size: item.size,
+        quantity: item.quantity,
+        price: item.preco_final
+      }));
+      await this.orderService.createOrderItems(itemsPayload);
 
-    const itemsPayload = this.cartItems.map(item => ({
-      order_id: orderId,
-      product_id: item.product_id || item.products?.id,
-      size: item.size,
-      quantity: item.quantity,
-      price: item.preco_final
-    }));
-    await this.orderService.createOrderItems(itemsPayload);
+      // Criar preferência de pagamento no Mercado Pago
+      const orderItemsForMP = this.cartItems.map(item => ({
+        title: item.products?.name || 'Produto',
+        quantity: item.quantity,
+        unit_price: item.preco_final // 👈 obrigatório no formato certo
+      }));
 
-    // 2. Criar preferência de pagamento no Mercado Pago
-    const orderItemsForMP = this.cartItems.map(item => ({
-      title: item.products?.nome || 'Produto',
-      quantity: item.quantity,
-      price: item.preco_final
-    }));
+      const preferencePayload = {
+        items: orderItemsForMP,
+        back_urls: {
+          success: "https://seusite.com/success",
+          pending: "https://seusite.com/pending",
+          failure: "https://seusite.com/failure"
+        },
+        auto_return: "approved",
+        notification_url: "https://seusite.com/webhook/mercadopago", // webhook para confirmar pagamento
+        statement_descriptor: "Tito Magazine", // texto que aparece na fatura do cliente
+        external_reference: `order-${Date.now()}` // referência única (ex: ID do pedido)
+      };
 
-    this.paymentService.createPreference({ items: orderItemsForMP }).subscribe({
-      next: (response: any) => {
-        if (response.init_point) {
-          // **Redireciona para o checkout do MP**
-          window.location.href = response.init_point;
-        } else {
-          alert('Erro ao gerar o checkout. Tente novamente.');
+      this.paymentService.createPreference(preferencePayload).subscribe({
+        next: (response: any) => {
+          if (response.init_point) {
+            window.location.href = response.init_point;
+          } else {
+            alert('Erro ao gerar o checkout. Tente novamente.');
+          }
+        },
+        error: (err: any) => {
+          console.error('Erro ao criar preferência no Mercado Pago:', err);
+          alert('Ocorreu um erro ao gerar o pagamento. Tente novamente.');
+          this.loadingPagamento = false;
         }
-      },
-      error: (err: any) => {
-        console.error('Erro ao criar preferência no Mercado Pago:', err);
-        alert('Ocorreu um erro ao gerar o pagamento. Tente novamente.');
-      }
-    });
+      });
 
-    // **Não limpar carrinho nem resetar formulário aqui!**
-    // Isso deve acontecer **somente após o pagamento confirmado**, via webhook ou retorno do MP
+      // **Não limpar carrinho nem resetar formulário aqui!**
+      // Isso deve acontecer **somente após o pagamento confirmado**, via webhook ou retorno do MP
 
-  } catch (error) {
-    console.error('Erro ao finalizar compra:', error);
-    alert('Ocorreu um erro ao finalizar a compra. Tente novamente.');
-  } finally {
-    this.isFinalizando = false;
+    } catch (error) {
+      console.error('Erro ao finalizar compra:', error);
+      alert('Ocorreu um erro ao finalizar a compra. Tente novamente.');
+    } finally {
+      this.isFinalizando = false;
+    }
   }
-}
-
-
-
 
   async loadCart() {
     if (!this.userId) return;

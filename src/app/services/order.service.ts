@@ -103,4 +103,19 @@ async buscarVendasAgrupadas(): Promise<any[]> {
   return data || [];
 }
 
+async getOrdersByUserId(userId: string) {
+  const { data, error } = await this.supabase
+    .from('order_items_view')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[OrderService] Erro ao buscar pedidos (view):', error.message);
+    throw error;
+  }
+
+  return data;
+}
+
 }
