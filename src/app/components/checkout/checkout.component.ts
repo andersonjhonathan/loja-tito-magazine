@@ -136,15 +136,15 @@ export class CheckoutComponent implements OnInit {
   }
 
   isFormularioValido(form: any): boolean {
-  if (!form) return false;
+    if (!form) return false;
 
-        return form.form.controls['email']?.valid &&
-        form.form.controls['nome']?.valid &&
-        form.form.controls['celular']?.valid &&
-        form.form.controls['cpf']?.valid &&
-        form.form.controls['cep']?.valid &&
-        form.form.controls['numero']?.valid;
-}
+    return form.form.controls['email']?.valid &&
+      form.form.controls['nome']?.valid &&
+      form.form.controls['celular']?.valid &&
+      form.form.controls['cpf']?.valid &&
+      form.form.controls['cep']?.valid &&
+      form.form.controls['numero']?.valid;
+  }
 
   resetarEndereco() {
     this.endereco = {
@@ -164,23 +164,33 @@ export class CheckoutComponent implements OnInit {
       });
       return;
     }
-    
+
     this.loadingPagamento = true;
     this.isFinalizando = true;
 
     try {
-      // 1. Criar pedido, endereço e itens **com status "pendente"**
+      // 1. Monta payload para criar o pedido via Edge Function
       const orderPayload = {
         user_id: this.userId!,
-        total: this.getTotal(),
-        status: 'pendente',
-        payment_method: this.metodoPagamentoSelecionado
+        items: this.cartItems.map(item => ({
+          title: item.products?.name || 'Produto',
+          quantity: item.quantity,
+          unit_price: item.preco_final // obrigatório
+        }))
       };
-      const createdOrder = await this.orderService.createOrder(orderPayload);
-      const orderId = createdOrder.id;
 
-      const addressPayload = {
-        order_id: orderId,
+      const mpResponse = await this.orderService.createMPPreference({
+        user_id: this.userId!,
+        items: this.cartItems.map(item => ({
+          title: item.products?.name || 'Produto',
+          quantity: item.quantity,
+          unit_price: item.preco_final
+        }))
+      });
+
+      // 2. Salva endereço
+      await this.orderService.createAddress({
+        order_id: mpResponse.order_id,
         cep: this.cep,
         street: this.endereco.rua,
         number: this.endereco.numero,
@@ -188,63 +198,23 @@ export class CheckoutComponent implements OnInit {
         neighborhood: this.endereco.bairro,
         city: this.endereco.cidade,
         state: this.endereco.estado
-      };
-      await this.orderService.createAddress(addressPayload);
-
-      const itemsPayload = this.cartItems.map(item => ({
-        order_id: orderId,
-        product_id: item.product_id || item.products?.id,
-        size: item.size,
-        quantity: item.quantity,
-        price: item.preco_final
-      }));
-      await this.orderService.createOrderItems(itemsPayload);
-
-      // Criar preferência de pagamento no Mercado Pago
-      const orderItemsForMP = this.cartItems.map(item => ({
-        title: item.products?.name || 'Produto',
-        quantity: item.quantity,
-        unit_price: item.preco_final // 👈 obrigatório no formato certo
-      }));
-
-      const preferencePayload = {
-        items: orderItemsForMP,
-        back_urls: {
-          success: "https://seusite.com/success",
-          pending: "https://seusite.com/pending",
-          failure: "https://seusite.com/failure"
-        },
-        auto_return: "approved",
-        notification_url: "https://seusite.com/webhook/mercadopago", // webhook para confirmar pagamento
-        statement_descriptor: "Tito Magazine", // texto que aparece na fatura do cliente
-        external_reference: `order-${Date.now()}` // referência única (ex: ID do pedido)
-      };
-
-      this.paymentService.createPreference(preferencePayload).subscribe({
-        next: (response: any) => {
-          if (response.init_point) {
-            window.location.href = response.init_point;
-          } else {
-            alert('Erro ao gerar o checkout. Tente novamente.');
-          }
-        },
-        error: (err: any) => {
-          console.error('Erro ao criar preferência no Mercado Pago:', err);
-          alert('Ocorreu um erro ao gerar o pagamento. Tente novamente.');
-          this.loadingPagamento = false;
-        }
       });
 
-      // **Não limpar carrinho nem resetar formulário aqui!**
-      // Isso deve acontecer **somente após o pagamento confirmado**, via webhook ou retorno do MP
+      // 3. Redireciona para checkout
+      window.location.href = mpResponse.init_point;
+
+      // **Não limpar carrinho nem resetar formulário aqui**
+      // Isso deve ser feito **apenas após o pagamento confirmado**, via webhook ou retorno do MP
 
     } catch (error) {
       console.error('Erro ao finalizar compra:', error);
       alert('Ocorreu um erro ao finalizar a compra. Tente novamente.');
     } finally {
       this.isFinalizando = false;
+      this.loadingPagamento = false;
     }
   }
+
 
   async loadCart() {
     if (!this.userId) return;
