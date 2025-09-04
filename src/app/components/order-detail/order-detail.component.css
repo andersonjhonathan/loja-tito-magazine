@@ -1,0 +1,141 @@
+.meus-pedidos {
+  max-width: 900px;
+}
+
+.titulo-pagina {
+  font-weight: 600;
+  margin-bottom: 30px;
+  color: #222;
+  text-align: center;
+}
+
+.pedido-card {
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pedido-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.pedido-header .pedido-id {
+  font-weight: 600;
+  color: #333;
+  margin-top: 35px;
+}
+
+.valor-total {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+.subtitulo {
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+.preco-item {
+  font-weight: 600;
+  color: #28a745;
+}
+
+.sem-pedidos .icone-vazio {
+  font-size: 4rem;
+  color: #ccc;
+  margin-bottom: 15px;
+}
+
+.sem-pedidos .mensagem-vazia {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #666;
+}
+
+/* ===================== */
+/*   RESPONSIVIDADE      */
+/* ===================== */
+@media (max-width: 768px) {
+  .meus-pedidos {
+    padding: 0 15px;
+  }
+
+  .pedido-card {
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .pedido-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 6px;
+  }
+
+  .pedido-header .badge {
+    align-self: flex-end;
+  }
+
+  .endereco p,
+  .itens ul li {
+    font-size: 0.9rem;
+  }
+
+  .preco-item {
+    font-size: 0.95rem;
+  }
+
+  .valor-total {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pedido-header {
+    align-items: stretch !important;
+  }
+
+  .pedido-header h5 {
+    font-size: 1rem;
+  }
+
+  .pedido-card {
+    padding: 8px;
+  }
+
+  .itens ul li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+
+  .preco-item {
+    align-self: flex-end;
+  }
+}
+
+.status-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px 0;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
+  border-radius: 12px 12px 0 0;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+/* Cores dinâmicas */
+.status-banner.pago {
+  background: #4caf50; /* Verde */
+}
+.status-banner.pendente {
+  background: #ff9800; /* Laranja */
+}
+.status-banner.negado {
+  background: #f44336; /* Vermelho */
+}

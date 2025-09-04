@@ -21,6 +21,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild('loginBtnMobile') loginButtonMobile!: ElementRef;
   @ViewChild('offcanvasMenu') offcanvasMenu!: ElementRef;
   isAdmin: boolean = false;
+  isUser: boolean = false;
   mostrarPopoverDesktop: boolean = false;
   mostrarPopoverMobile: boolean = false;
   popoverPosition: { top: string; left: string } | null = null;
@@ -34,25 +35,50 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private authSubscription: Subscription | null = null;
 
 
+  // ngOnInit() {
+  //   this.checkScreen();
+  //   // Inscrever-se para mudanças no estado de admin
+  //   this.authSubscription = this.authService.isAdmin$.subscribe(isAdmin => {
+  //     this.isAdmin = isAdmin;
+  //   });
+
+  //   this.authService.usuario$.subscribe((usuario) => {
+  //     this.usuarioLogado = usuario;
+
+  //     if (usuario && usuario.id) {
+  //       this.cartService.loadCart(usuario.id);
+  //     }
+  //   });
+
+  //   this.cartService.cart$.subscribe(items => {
+  //     this.quantidadeCarrinho = items.length;
+  //   });
+  // }
+
   ngOnInit() {
-    this.checkScreen();
-    // Inscrever-se para mudanças no estado de admin
-    this.authSubscription = this.authService.isAdmin$.subscribe(isAdmin => {
-      this.isAdmin = isAdmin;
-    });
+  this.checkScreen();
 
-    this.authService.usuario$.subscribe((usuario) => {
-      this.usuarioLogado = usuario;
+  this.authSubscription = this.authService.isAdmin$.subscribe(isAdmin => {
+    this.isAdmin = isAdmin;
 
-      if (usuario && usuario.id) {
-        this.cartService.loadCart(usuario.id);
-      }
-    });
+    this.isUser = !!this.usuarioLogado && !isAdmin;
+  });
 
-    this.cartService.cart$.subscribe(items => {
-      this.quantidadeCarrinho = items.length;
-    });
-  }
+  this.authService.usuario$.subscribe((usuario) => {
+    this.usuarioLogado = usuario;
+
+    this.isUser = !!usuario && !this.isAdmin;
+
+    if (usuario && usuario.id) {
+      this.cartService.loadCart(usuario.id);
+    }
+  });
+
+  this.cartService.cart$.subscribe(items => {
+    this.quantidadeCarrinho = items.length;
+  });
+}
+
 
   isMobile: boolean = false;
 
@@ -154,6 +180,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   navegarParaDashboard() {
     this.router.navigate(['/dashboard']);
+  }
+
+  navegarParaMeusPedidos(){
+    this.router.navigate(['/detalhe-dos-pedidos']);
   }
 
   logout() {

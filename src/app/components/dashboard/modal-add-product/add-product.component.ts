@@ -25,7 +25,7 @@ export class AddProductComponent implements OnInit {
 
   categorySelected: string = '';
 
-  availableSizes = ['P', 'M', 'G', 'GG', 'XG', 'XXG'];
+  availableSizes = ['P', 'M', 'G', 'GG', 'XG', 'XGG'];
   availableShoeSizes = ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
 
   selectedSizes: string[] = [];

@@ -95,7 +95,6 @@
                             <strong>R$ 0.00</strong>
                         </div>
                     </div>
-
                 </div>
 
                 <!-- Métodos de envio -->
@@ -105,131 +104,15 @@
 
                 <!-- Pagamento -->
                 <h5 class="text-uppercase text-primary mb-4 mt-2">Pagamento</h5>
-                <div class="accordion" id="paymentMethods">
-                    <!-- Cartão -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingCard">
-                            <button class="accordion-button shadow-sm rounded-3" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapseCard" aria-expanded="true" (click)="metodoPagamentoSelecionado = 'cartao'">
-                                Cartão de Crédito
-                            </button>
-                        </h2>
-                        <div id="collapseCard" class="accordion-collapse collapse show">
-                            <div class="accordion-body" *ngIf="metodoPagamentoSelecionado === 'cartao'">
-                                <div class="mb-2">
-                                    <input type="text" class="form-control rounded-3 shadow-sm"
-                                        placeholder="Número do cartão" required name="numeroCartao"
-                                        [(ngModel)]="pagamento.numeroCartao" #numeroCartao="ngModel" />
-                                    <div *ngIf="numeroCartao.invalid && numeroCartao.touched" class="text-danger small">
-                                        Informe o número do cartão.
-                                    </div>
-                                </div>
-                                <div class="mb-2">
-                                    <input type="text" class="form-control rounded-3 shadow-sm"
-                                        placeholder="Nome impresso no cartão" required name="nomeCartao"
-                                        [(ngModel)]="pagamento.nomeCartao" #nomeCartao="ngModel" />
-                                    <div *ngIf="nomeCartao.invalid && nomeCartao.touched" class="text-danger small">
-                                        Informe o nome do cartão.
-                                    </div>
-                                </div>
-                                <div class="row mb-2">
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control rounded-3 shadow-sm" placeholder="MM/AA"
-                                            required name="validadeCartao" [(ngModel)]="pagamento.validadeCartao"
-                                            #validadeCartao="ngModel" />
-                                        <div *ngIf="validadeCartao.invalid && validadeCartao.touched"
-                                            class="text-danger small">
-                                            Informe a validade.
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control rounded-3 shadow-sm" placeholder="CVV"
-                                            required name="cvvCartao" [(ngModel)]="pagamento.cvvCartao"
-                                            #cvvCartao="ngModel" />
-                                        <div *ngIf="cvvCartao.invalid && cvvCartao.touched" class="text-danger small">
-                                            Informe o CVV.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <select class="form-select rounded-3 shadow-sm" required name="parcelasCartao"
-                                        [(ngModel)]="pagamento.parcelasCartao" #parcelasCartao="ngModel">
-                                        <option value="" disabled selected>Selecione a parcela</option>
-                                        <option *ngFor="let p of parcelasDisponiveis" [value]="p.parcelas">
-                                            {{ p.parcelas }}x de R$ {{ p.valorParcela | number:'1.2-2' }}
-                                        </option>
-                                    </select>
-                                    <div *ngIf="parcelasCartao.invalid && parcelasCartao.touched"
-                                        class="text-danger small">
-                                        Selecione a quantidade de parcelas.
-                                    </div>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input type="checkbox" class="form-check-input" id="saveCardInfo"
-                                        name="saveCardInfo" [(ngModel)]="pagamento.salvarInfo" />
-                                    <label class="form-check-label" for="saveCardInfo">
-                                        Salvar minhas informações com segurança
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100 rounded-3 shadow-sm"
-                                    [disabled]="!isFormularioValido(checkoutForm)">
-                                    🔒 Finalizar compra
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- PIX -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingPix">
-                            <button class="accordion-button collapsed shadow-sm rounded-3" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#collapsePix" aria-expanded="false"
-                                (click)="metodoPagamentoSelecionado = 'pix'">
-                                PIX
-                            </button>
-                        </h2>
-                        <div id="collapsePix" class="accordion-collapse collapse" data-bs-parent="#paymentMethods">
-                            <div class="accordion-body">
-                                <p><strong>Clique em "Finalizar Compra" para gerar o PIX.</strong></p>
-                                <ul>
-                                    <li>Valor à vista <strong>R$ {{ getTotal() | number:'1.2-2' }}</strong>;</li>
-                                    <li>Não pode ser parcelado! Use cartão de crédito para parcelar sua compra;</li>
-                                    <li>Prazo de até 30 minutos para compensar.</li>
-                                </ul>
-                                <button type="submit" class="btn btn-primary w-100 rounded-3 shadow-sm"
-                                    [disabled]="!isFormularioValido(checkoutForm)">
-                                    🔒 Finalizar compra
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- BOLETO -->
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingBoleto">
-                            <button class="accordion-button collapsed shadow-sm rounded-3" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#collapseBoleto" aria-expanded="false"
-                                (click)="metodoPagamentoSelecionado = 'boleto'">
-                                Boleto
-                            </button>
-                        </h2>
-                        <div id="collapseBoleto" class="accordion-collapse collapse" data-bs-parent="#paymentMethods">
-                            <div class="accordion-body">
-                                <p><strong>Clique em "Finalizar Compra" para gerar o Boleto.</strong></p>
-                                <ul>
-                                    <li>Valor à vista <strong>R$ {{ getTotal() | number:'1.2-2' }}</strong>;</li>
-                                    <li>Não pode ser parcelado! Use cartão de crédito para parcelar sua compra;</li>
-                                    <li>Prazo de até 3 dias úteis para compensar.</li>
-                                </ul>
-                                <button type="submit" class="btn btn-primary w-100 rounded-3 shadow-sm"
-                                    [disabled]="!isFormularioValido(checkoutForm)">
-                                    🔒 Finalizar compra
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+                <button type="submit" class="btn btn-primary w-100 rounded-3 shadow-sm"
+                    [disabled]="!isFormularioValido(checkoutForm) || loadingPagamento">
+                    <span *ngIf="!loadingPagamento">🔒 Finalizar compra</span>
+                    <span *ngIf="loadingPagamento">
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Processando...
+                    </span>
+                </button>
             </form>
         </div>
 
@@ -287,7 +170,5 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
