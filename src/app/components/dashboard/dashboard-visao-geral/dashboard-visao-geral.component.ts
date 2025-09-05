@@ -54,9 +54,14 @@ export class DashboardVisaoGeralComponent implements OnInit {
     this.deviceService.isMobile$.subscribe(value => {
       this.isMobile = value;
     });
-    this.productService.getAllSoldProducts().subscribe(data => {
-      this.salesList = data;
-    });
+    this.productService.getAllSoldProducts().subscribe({
+  next: (data) => {
+    this.salesList = data;
+    this.atualizarMetricas(); // chama só depois de ter os dados
+    this.atualizarGraficoVendas();
+  },
+  error: (err) => console.error('Erro ao carregar vendas:', err)
+});
    
   }
 
@@ -279,6 +284,36 @@ atualizarMetricas() {
     { valor: 0, titulo: 'Não Sincronizados', bg: 'bg-danger' }, // ajuste se tiver a lógica
   ];
 }
+
+
+atualizarGraficoVendas() {
+  if (!this.salesList || this.salesList.length === 0) return;
+
+  const meses = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  const vendasPorMes = new Array(12).fill(0);
+
+  this.salesList.forEach(venda => {
+    if (venda.status === 'pago' && venda.created_at) {
+      const data = new Date(venda.created_at);
+      const mes = data.getMonth(); // 0 a 11
+      vendasPorMes[mes] += venda.quantity ?? 0; // soma apenas quantidade
+    }
+  });
+
+  this.chartOptions = {
+    chart: { type: 'bar' },
+    title: { text: 'Vendas por Mês' },
+    xAxis: { categories: meses },
+    series: [{ name: 'Itens Vendidos', data: vendasPorMes, type: 'bar' }]
+  };
+}
+
+
+
 
 
 }

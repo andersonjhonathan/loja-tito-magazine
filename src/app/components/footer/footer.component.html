@@ -7,10 +7,15 @@
         <img src="assets/tito_logo.png" class="img-fluid mb-3" style="max-width: 200px;">
         <h6 class="fw-bold">ATENDIMENTO AO CLIENTE</h6>
         <p class="mb-1"><strong class="pe-2">E-mail:</strong>titomagazine&#64;gmail.com</p>
-        <p class="mb-1"><strong class="pe-2">WhatsApp:</strong><a href="https://wa.me/message/WAXJ4EVATBPVE1">+55 21 97038-5135</a></p>
-        <p class="mb-1"><strong class="pe-2">Instagram:</strong><a href="https://www.instagram.com/titomagazineoficial?igsh=MXVhN3U5dXBwbHZweg==">&#64;titomagazineoficial</a></p>
-        <p class="mb-1"><strong class="pe-2">Facebook:</strong><a href="https://www.facebook.com/share/1AwzhFCSam/">Tito Magazine Oficial</a></p>
-        <p class="mb-1"><strong class="pe-2">TikTok:</strong><a href="https://www.tiktok.com/@titooliveir?_t=ZM-8xQbGh02CfA&_r=1">Tito Magazine Oficial</a></p>
+        <p class="mb-1"><strong class="pe-2">WhatsApp:</strong><a href="https://wa.me/message/WAXJ4EVATBPVE1">+55 21
+            97038-5135</a></p>
+        <p class="mb-1"><strong class="pe-2">Instagram:</strong><a
+            href="https://www.instagram.com/titomagazineoficial?igsh=MXVhN3U5dXBwbHZweg==">&#64;titomagazineoficial</a>
+        </p>
+        <p class="mb-1"><strong class="pe-2">Facebook:</strong><a href="https://www.facebook.com/share/1AwzhFCSam/">Tito
+            Magazine Oficial</a></p>
+        <p class="mb-1"><strong class="pe-2">TikTok:</strong><a
+            href="https://www.tiktok.com/@titooliveir?_t=ZM-8xQbGh02CfA&_r=1">Tito Magazine Oficial</a></p>
       </div>
 
       <!-- Menu de Rodapé -->
@@ -47,15 +52,22 @@
       <!-- Newsletter -->
       <div class="col-12 col-md-3 mb-4">
         <h5 class="fw-bold">NOSSA NEWSLETTER</h5>
-        <p class="text-white-50">Assine nossa newsletter e receba as melhores ofertas <strong class="text-white">DE
-            GRAÇA!</strong></p>
+        <p class="text-white-50">
+          Assine nossa newsletter e receba as melhores ofertas
+          <strong class="text-white">DE GRAÇA!</strong>
+        </p>
 
-        <!-- Container responsivo -->
-        <form class="newsletter-form">
-          <input type="email" class="form-control mb-2" placeholder="Seu e-mail" required>
-          <button type="submit" class="btn btn-primary w-100">Enviar</button>
+        <form class="newsletter-form" (ngSubmit)="inscreverNewsletter()" #newsletterForm="ngForm">
+          <input type="email" name="email" class="form-control mb-2" placeholder="Seu e-mail" required
+            [(ngModel)]="email" />
+          <button type="submit" class="btn btn-primary w-100" [disabled]="!newsletterForm.form.valid">
+            Enviar
+          </button>
         </form>
+
+        <p *ngIf="mensagem" class="mt-2 text-white">{{ mensagem }}</p>
       </div>
+
 
     </div>
 
